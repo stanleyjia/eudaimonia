@@ -1,0 +1,30 @@
+{
+  "name": "Eudaimonia",
+  "description": "my ext",
+  "version": "0.1.0",
+  "manifest_version": 2,
+  "icons": {
+    "16": "./img/obj-16.png",
+    "32": "./img/obj-32.png",
+    "48": "./img/obj-48.png",
+    "128": "./img/obj-128.png"
+  },
+  "background": {
+    "page": "background.html",
+    "persistent": false
+  },
+  "options_page": "./options.html",
+  "browser_action": {
+    "default_popup": "main.html"
+  },
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "storage",
+    "idle",
+    "chrome://favicon/*",
+    "webNavigation",
+    "unlimitedStorage"
+  ],
+  "content_security_policy": "script-src 'self' https://*.firebaseio.com https://cdn.firebase.com https://apis.google.com https://www.gstatic.com; object-src 'self'"
+}

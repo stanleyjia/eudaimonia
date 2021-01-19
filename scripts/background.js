@@ -24,10 +24,14 @@ var chromeTime = 0;
 var notInChromeTime = 0;
 
 // how much time using chrome before prompt to log mood (in seconds)
-const PROMPT_TIMER = 15; // 15 mins
+// const PROMPT_TIMER = 15; // 15 seconds
+const PROMPT_TIMER = 900; // 15 minutes
+
 
 // how much time not using chrome before counting as inactive
-const INACTIVE_TIMER = 5; // 3 minutes
+// const INACTIVE_TIMER = 5; // 5 seconds
+const INACTIVE_TIMER = 180; // 3 minutes
+
 
 // how often to update firebase database (timeIntervals and moods)
 const FIREBASE_UPDATE_FREQ = 10000; // 10 seconds

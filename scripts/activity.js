@@ -85,9 +85,7 @@ class Activity {
     this.closeIntervalForCurrentTab();
     currentTab = '';
   }
-  getToday() {
-    return new Date().toLocaleDateString("en-US").split('/').join('-');
-  }
+
   addTimeInterval(domain) {
     // console.log("addTimeInterval called");
     // look for time interval with inputted domain and current date

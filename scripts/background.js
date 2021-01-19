@@ -1,52 +1,38 @@
 
-
-DEBUG_PRINT = true;
-
-// FIREBASE CONFIG FOR EUDAIMONIA
-
-const firebaseConfig = {
-  apiKey: "AIzaSyA81iaieyP5BPXTZf9V1M_xYS-sJxRPGKc",
-  authDomain: "eudaimonia-f99b5.firebaseapp.com",
-  projectId: "eudaimonia-f99b5",
-  storageBucket: "eudaimonia-f99b5.appspot.com",
-  messagingSenderId: "280495522376",
-  appId: "1:280495522376:web:bf97aca351d7a867128e7d"
-};
-
-// FIREBASE CONFIG FOR JOSEPH'S DATABASE
-/*
-const firebaseConfig = {
-  apiKey: "AIzaSyBj7fmZRv_SCFXClGvWKN_QFr-_vxv_42w",
-  authDomain: "user-auth-development.firebaseapp.com",
-  databaseURL: "https://user-auth-development-default-rtdb.firebaseio.com",
-  projectId: "user-auth-development",
-  storageBucket: "user-auth-development.appspot.com",
-  messagingSenderId: "496590033273",
-  appId: "1:496590033273:web:c2f3ca11a7ddf2c6fa9fa8"
-};*/
-
-
-firebase.initializeApp(firebaseConfig);
 var db = firebase.database();
 
 // Indicator variables
 var userExists = false;
-var dayExists = false;
-
-
-let user_signed_in = false;
-var userUID = "";
+let userSignedIn = false;
 var currentUser = null;
 
+
+
 var tabs;
-var timeIntervalList = [];
 var currentTab;
 var activity = new Activity();
 
+var timeIntervalList = [];
 var moodsList = [];
+
 
 var promptForLog = true;
 var promptForLogChanged = false;
+
+
+var chromeTime = 0;
+var notInChromeTime = 0;
+
+// how much time using chrome before prompt to log mood (in seconds)
+const PROMPT_TIMER = 15; // 15 mins
+
+// how much time not using chrome before counting as inactive
+const INACTIVE_TIMER = 5; // 3 minutes
+
+// how often to update firebase database (timeIntervals and moods)
+const FIREBASE_UPDATE_FREQ = 10000; // 10 seconds
+
+
 
 function showPromptIcon(status) {
   console.log("change icon");
@@ -56,90 +42,54 @@ function showPromptIcon(status) {
     chrome.browserAction.setIcon({ path: '../img/obj-32.png' });
   }
 }
+function updateLocalVariables(user) {
+  // Update Intervals and Moods List
+  // Realtime Database to local storage
 
-function checkWhetherPromptUser() {
+  // get current time intervals and insert into timeIntervalList
+  var today = getToday(); // 12/29/2000
+  db.ref(`web/${user.uid}/${today}`).once("value", function (snapshot) {
+    snapshot.forEach((child) => {
+      // console.log(child.key, child.val());
+      var newInterval = new TimeInterval(today, decodeURL(child.key));
+      var data = child.val();
+      for (let innerKey in data) {
+        // console.log(innerKey, data[innerKey]);
+        newInterval.intervals.push(innerKey + '-' + data[innerKey]);
+      }
+      timeIntervalList.push(newInterval);
+    });
+    console.log(timeIntervalList);
+  });
 
+
+  // Update Local Moods -- insert into Moods List
+  db.ref(`moods/${user.uid}/${today}`).once("value", function (snapshot) {
+    snapshot.forEach((child) => {
+      console.log(child.key, child.val());
+      var data = child.val();
+      var newMood = new Mood(today, child.key, data.mood1, data.mood2);
+      moodsList.push(newMood);
+    });
+  });
 }
-
-
-
+// User logged in or logged out
 firebase.auth().onAuthStateChanged(function (user) {
   // console.log('auth state changed');
   if (user) {
     console.log(`[onAuthStateChanged] user signed in: ${user.uid}`);
-    // console.log(user.uid);
     timeIntervalList = []; // reset timeIntervalList
     currentUser = user;
-    userUID = user.uid;
-    user_signed_in = true;
-    // checkDocumentExistsForUser(user);
+    userSignedIn = true;
+
     checkUserExists(user);
-
-    // Update Local Intervals
-    // get current time intervals and insert into timeIntervalList
-    var today = getToday(); // 12/29/2000
-    db.ref(`web/${user.uid}/${today}`).once("value", function (snapshot) {
-      snapshot.forEach((child) => {
-        // console.log(child.key, child.val());
-        var newInterval = new TimeInterval(today, decodeURL(child.key));
-        var data = child.val();
-        for (let innerKey in data) {
-          // console.log(innerKey, data[innerKey]);
-          newInterval.intervals.push(innerKey + '-' + data[innerKey]);
-        }
-        timeIntervalList.push(newInterval);
-      });
-      console.log(timeIntervalList);
-    });
-
-    // Update Local Moods -- insert into Moods List
-    db.ref(`moods/${user.uid}/${today}`).once("value", function (snapshot) {
-      snapshot.forEach((child) => {
-        console.log(child.key, child.val());
-        var data = child.val();
-        var newMood = new Mood(today, child.key, data.mood1, data.mood2);
-        moodsList.push(newMood);
-      });
-      // console.log(moodsList);
-    });
-
-
-
+    updateLocalVariables(user);
   }
   else {
     console.log("[onAuthStateChanged] user not signed in");
-    user_signed_in = false;
+    userSignedIn = false;
   }
 });
-
-
-function checkUserExists(user) {
-  db.ref(`users/${user.uid}`).once("value", snapshot => {
-    if (snapshot.exists()) {
-      console.log("[checkUserExists] user exists");
-      userExists = true;
-    } else {
-      console.log("[checkUserExists] user doesn't exist");
-      createUser(user);
-    }
-  });
-}
-
-function createUser(user) {
-  db.ref(`users/${user.uid}`).set({
-    name: user.displayName,
-    email: user.email,
-    photoUrl: user.photoURL,
-    emailVerified: user.emailVerified,
-    uid: user.uid
-  });
-  userExists = true;
-  console.log("[createUser] user created");
-}
-
-function getToday() {
-  return new Date().toLocaleDateString("en-US").split('/').join('-');
-}
 
 // Check if installed or updated
 chrome.runtime.onInstalled.addListener(function (details) {
@@ -151,21 +101,19 @@ chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason == 'update') {
     // newly updated
     console.log("Extension Updated");
-    // user_signed_in = false;
   }
 });
 
-
-// change sign in status from content scripts
+// recieve messages
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   // console.log(request.message);
   if (request.message === 'is_user_signed_in') {
     sendResponse({
       message: 'success',
-      payload: user_signed_in
+      payload: userSignedIn
     });
   } else if (request.message === 'sign_out') {
-    user_signed_in = false;
+    userSignedIn = false;
     firebase.auth().signOut().then(() => {
       // Sign-out successful.
       sendResponse({ message: 'success' });
@@ -175,13 +123,12 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     });
   }
   else if (request.message === 'sign_in') {
-    console.log("sign in message received");
-    user_signed_in = true;
+    // console.log("sign in message received");
+    userSignedIn = true;
     sendResponse({ message: 'success' });
   }
   else if (request.message === 'mood_clicked') {
     // console.log(`Mood Button clicked: ${request.mood1}, ${request.mood2} `);
-    var today = new Date();
     var time = getTime();
     var mood_instance = new Mood(getToday(), time, request.mood1, request.mood2);
     // check if mood was entered twice (same timestamp)
@@ -193,7 +140,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     }
     // Reset prompt
     promptForLog = false;
-    promptForLogChanged = true;
+    showPromptIcon(promptForLog);
 
 
     sendResponse({ message: 'success' });
@@ -207,56 +154,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 
 
 
-function updateTime() {
-  // Run bgCheck every second
-  setInterval(bgCheck, 1000);
-}
-
-// update storage (firebase)
-function updateStorage() {
-  setInterval(backgroundUpdateStorage, 3000);
-}
-
-function encodeURL(url) {
-  url = encodeURIComponent(url);
-  url = url.replace(/\./g, '%2E');
-  return url;
-}
-
-function decodeURL(url) {
-  replacePeriod = url.replace('%2E', '.');
-  return decodeURIComponent(replacePeriod);
-}
-
-function getTime() {
-  var date = new Date();
-  var stringDate = date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0');
-  return stringDate;
-}
-function storeTimeIntervals(user) {
-  // timeIntervalList
-  // var this_date = timeIntervalList[0].day;
-  var today = getToday();
-  var updates = {};
-  timeIntervalList = timeIntervalList.filter(interval => interval.day == today);
-  for (i = 0; i < timeIntervalList.length; i++) {
-    var timeInterval = timeIntervalList[i];
-    if (timeInterval.day != today) {
-      console.log("Error: multiple days in timeIntervalList!!");
-    }
-    var encodedDomain = encodeURL(timeInterval.domain);
-    // var dateStr = timeInterval.day.split('/').join('-');
-    var intervalData = {};
-    for (j = 0; j < timeInterval.intervals.length; j++) {
-      var interval = timeInterval.intervals[j];
-      var start = interval.split('-')[0];
-      var end = interval.split('-')[1];
-      intervalData[start] = end;
-    }
-    updates[encodedDomain] = intervalData;
-  }
-  db.ref(`web/${user.uid}/${today}/`).update(updates);
-}
 
 function storeMoodsList(user) {
   var dateStr = getToday();
@@ -275,42 +172,51 @@ function storeMoodsList(user) {
 }
 
 
-function backgroundUpdateStorage() {
-  if (user_signed_in == false) {
+function updateFirebaseDatabase() {
+  if (userSignedIn == false) {
     return;
   }
   if (timeIntervalList != undefined && timeIntervalList.length > 0) {
-    // console.log('updating storage');
     storeTimeIntervals(currentUser);
   }
 
   if (moodsList != undefined && moodsList.length > 0) {
     storeMoodsList(currentUser);
   }
-  // storage.saveValue(STORAGE_TIMEINTERVAL_LIST, timeIntervalList);
 }
 
 
 function bgCheck() {
   // runs each second
-  if (!user_signed_in) {
+  if (userSignedIn == false) {
     return;
   }
   if (promptForLogChanged) {
     showPromptIcon(promptForLog);
     promptForLogChanged = false;
   }
-  // if (user_signed_in && dayExists == false) {
-  //   checkDayExists(currentUser);
-  // }
-  // console.log(moodsList);
-  // console.log("bgCheck Running");
+
+  if (chromeTime >= PROMPT_TIMER) {
+    // showPromptIcon(promptForLog);
+    console.log("SHOW PROMPT");
+    if (promptForLogChanged == false) {
+      promptForLogChanged = true;
+    }
+    promptForLog = true;
+    chromeTime = 0;
+  }
+
+
 
   // console.log("checking background");
   chrome.windows.getLastFocused({ populate: true }, function (currentWindow) {
     // if currentWindow is not a chrome settings page
     if (currentWindow != undefined) {
+      // console.log("HERE 1");
       if (currentWindow.focused) {
+        notInChromeTime = 0;
+        chromeTime += 1;
+        console.log(`Chrome time: ${chromeTime} `);
         // get active tab in focused window
         var activeTab = currentWindow.tabs.find(t => t.active === true);
         if (activeTab != undefined && activity.isValidPage(activeTab)) {
@@ -330,14 +236,25 @@ function bgCheck() {
               activity.setCurrentActiveTab(tab.url);
             }
             // check if its been idle for 30 seconds
-            chrome.idle.queryState(30000, function (state) {
+            chrome.idle.queryState(15, function (state) {
+              console.log(state);
               if (state === 'active') {
                 mainTRacker(activeUrl, tab, activeTab);
               } else checkDOM(state, activeUrl, tab, activeTab);
             });
           }
         }
-      } else activity.closeIntervalForCurrentTab();
+      } else {
+        // not in chrome
+        notInChromeTime += 1;
+        console.log(`not using chrome: ${notInChromeTime}`);
+        if (notInChromeTime >= INACTIVE_TIMER) {
+          console.log("RESET ACTIVE TIMER");
+          chromeTime = 0;
+          notInChromeTime = 0;
+        }
+        activity.closeIntervalForCurrentTab();
+      }
     }
   });
 
@@ -346,31 +263,29 @@ function bgCheck() {
 
 
 function mainTRacker(activeUrl, tab, activeTab) {
-
   tab.incSummaryTime();
-  // chrome.browserAction.setBadgeBackgroundColor({ color: "#ff2830" });
   var today = getToday();
   var summary = tab.days.find(s => s.date === today).summary;
-  // chrome.browserAction.setBadgeText({
-  //   tabId: activeTab.id,
-  //   text: String(convertSummaryTimeToBadgeString(summary))
-  // });
-
-  console.log(timeIntervalList);
+  // console.log(timeIntervalList);
   // console.log(tab.getTodayTime());
 }
 
 // Check if on Youtube or Netflix
 function checkDOM(state, activeUrl, tab, activeTab) {
+  console.log("checkDom running");
   if (state === 'idle' && isDomainEquals(activeUrl, "youtube.com")) {
-    trackForYT(mainTRacker, activeUrl, tab, activeTab);
+    // trackForYT(mainTRacker, activeUrl, tab, activeTab);
   } else if (state === 'idle' && isDomainEquals(activeUrl, "netflix.com")) {
-    trackForNetflix(mainTRacker, actifirebatab, activeTab);
-  } else activity.closeIntervalForCurrentTab();
+    // trackForNetflix(mainTRacker, activeUrl, tab, activeTab);
+  } else {
+    // Idle for 30 seconds
+    activity.closeIntervalForCurrentTab();
+  }
 }
 
 function trackForYT(callback, activeUrl, tab, activeTab) {
-  if (isHasPermissioForYouTube) {
+  console.log(`permission for youtube ${isHasPermissionForYouTube}`);
+  if (isHasPermissionForYouTube) {
     executeScriptYoutube(callback, activeUrl, tab, activeTab);
   } else {
     checkPermissionsForYT(executeScriptYoutube, activity.closeIntervalForCurrentTab, callback, activeUrl, tab, activeTab);
@@ -386,6 +301,7 @@ function trackForNetflix(callback, activeUrl, tab, activeTab) {
 }
 
 function executeScriptYoutube(callback, activeUrl, tab, activeTab) {
+  console.log("running on youtube");
   chrome.tabs.executeScript({ code: "var videoElement = document.getElementsByTagName('video')[0]; (videoElement !== undefined && videoElement.currentTime > 0 && !videoElement.paused && !videoElement.ended && videoElement.readyState > 2);" }, (results) => {
     if (results !== undefined && results[0] !== undefined && results[0] === true)
       callback(activeUrl, tab, activeTab);
@@ -394,6 +310,7 @@ function executeScriptYoutube(callback, activeUrl, tab, activeTab) {
 }
 
 function executeScriptNetflix(callback, activeUrl, tab, activeTab) {
+
   chrome.tabs.executeScript({ code: "var videoElement = document.getElementsByTagName('video')[0]; (videoElement !== undefined && videoElement.currentTime > 0 && !videoElement.paused && !videoElement.ended && videoElement.readyState > 2);" }, (results) => {
     if (results !== undefined && results[0] !== undefined && results[0] === true) {
       callback(activeUrl, tab, activeTab);
@@ -404,6 +321,15 @@ function executeScriptNetflix(callback, activeUrl, tab, activeTab) {
 }
 
 
+function updateTime() {
+  // Run bgCheck every second
+  setInterval(bgCheck, 1000);
+}
+
+// update firebase database
+function updateStorage() {
+  setInterval(updateFirebaseDatabase, FIREBASE_UPDATE_FREQ);
+}
 
 updateTime();
 updateStorage();

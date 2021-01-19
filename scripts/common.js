@@ -49,14 +49,6 @@ var SETTINGS_INTERVAL_RANGE = 'range_days';
 var SETTINGS_VIEW_TIME_IN_BADGE = 'view_time_in_badge';
 var SETTINGS_SHOW_HINT = 'show_hint';
 
-function isEmpty(obj) {
-  for (var prop in obj) {
-    if (obj.hasOwnProperty(prop))
-      return false;
-  }
-
-  return JSON.stringify(obj) === JSON.stringify({});
-}
 
 function convertTimeToSummaryTime(time) {
   var timeValue = time.split(':');
@@ -83,7 +75,7 @@ function convertSummaryTimeToBadgeString(summaryTime) {
   } else if (hours < 24) {
     return hours + "h";
   } else {
-    return days + "d"
+    return days + "d";
   }
 }
 
@@ -209,4 +201,26 @@ function treatAsUTC(date) {
 function daysBetween(startDate, endDate) {
   var millisecondsPerDay = 24 * 60 * 60 * 1000;
   return ((treatAsUTC(endDate) - treatAsUTC(startDate)) / millisecondsPerDay) + 1;
+}
+
+
+function encodeURL(url) {
+  url = encodeURIComponent(url);
+  url = url.replace(/\./g, '%2E');
+  return url;
+}
+
+function decodeURL(url) {
+  replacePeriod = url.replace('%2E', '.');
+  return decodeURIComponent(replacePeriod);
+}
+
+function getTime() {
+  var date = new Date();
+  var stringDate = date.getHours().toString().padStart(2, '0') + ':' + date.getMinutes().toString().padStart(2, '0') + ':' + date.getSeconds().toString().padStart(2, '0');
+  return stringDate;
+}
+
+function getToday() {
+  return new Date().toLocaleDateString("en-US").split('/').join('-');
 }

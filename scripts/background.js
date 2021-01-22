@@ -108,6 +108,18 @@ chrome.runtime.onInstalled.addListener(function (details) {
   }
 });
 
+chrome.tabs.onActivated.addListener(function (info) {
+  chrome.tabs.get(info.tabId, function (tab) {
+    activity.addTab(tab);
+  });
+});
+
+chrome.webNavigation.onCompleted.addListener(function (details) {
+  chrome.tabs.get(details.tabId, function (tab) {
+    activity.updateFavicon(tab);
+  });
+});
+
 // recieve messages
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   // console.log(request.message);
@@ -157,8 +169,6 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
 });
 
 
-
-
 function storeMoodsList(user) {
   var dateStr = getToday();
   var updates = {};
@@ -202,7 +212,7 @@ function bgCheck() {
 
   if (chromeTime >= PROMPT_TIMER) {
     // showPromptIcon(promptForLog);
-    console.log("SHOW PROMPT");
+    // console.log("SHOW PROMPT");
     if (promptForLogChanged == false) {
       promptForLogChanged = true;
     }
@@ -210,6 +220,7 @@ function bgCheck() {
     chromeTime = 0;
   }
 
+  // console.log(tabs);
 
 
   // console.log("checking background");
@@ -220,7 +231,7 @@ function bgCheck() {
       if (currentWindow.focused) {
         notInChromeTime = 0;
         chromeTime += 1;
-        console.log(`Chrome time: ${chromeTime} `);
+        // console.log(`Chrome time: ${chromeTime} `);
         // get active tab in focused window
         var activeTab = currentWindow.tabs.find(t => t.active === true);
         if (activeTab != undefined && activity.isValidPage(activeTab)) {
@@ -241,7 +252,7 @@ function bgCheck() {
             }
             // check if its been idle for 30 seconds
             chrome.idle.queryState(15, function (state) {
-              console.log(state);
+              // console.log(state);
               if (state === 'active') {
                 mainTRacker(activeUrl, tab, activeTab);
               } else checkDOM(state, activeUrl, tab, activeTab);
@@ -251,9 +262,9 @@ function bgCheck() {
       } else {
         // not in chrome
         notInChromeTime += 1;
-        console.log(`not using chrome: ${notInChromeTime}`);
+        // console.log(`not using chrome: ${notInChromeTime}`);
         if (notInChromeTime >= INACTIVE_TIMER) {
-          console.log("RESET ACTIVE TIMER");
+          // console.log("RESET ACTIVE TIMER");
           chromeTime = 0;
           notInChromeTime = 0;
         }
@@ -267,9 +278,9 @@ function bgCheck() {
 
 
 function mainTRacker(activeUrl, tab, activeTab) {
-  tab.incSummaryTime();
-  var today = getToday();
-  var summary = tab.days.find(s => s.date === today).summary;
+  // tab.incSummaryTime();
+  // var today = getToday();
+  // var summary = tab.days.find(s => s.date === today).summary;
   // console.log(timeIntervalList);
   // console.log(tab.getTodayTime());
 }

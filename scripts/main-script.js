@@ -24,6 +24,7 @@ document.querySelector('#bottom-button').addEventListener('click', () => {
   }
 });
 
+
 var page = 0;
 var page1_value_chosen = null;
 var mood1 = "";
@@ -93,20 +94,45 @@ for (let i = 0; i < mood_buttons.length; i++) {
   mood_buttons[i].addEventListener("click", function () {
     // console.log(mood_buttons[i].innerText);
     // console.log(mood_buttons[i].value);
-    page = page + 1;
-    if (page == 1) {
-      page1_value_chosen = mood_buttons[i].value;
-      mood1 = mood_buttons[i].innerText;
-      loadSecondPage(page1_value_chosen);
-    }
-    if (page == 2) {
-      page = 0;
-      window.close();
-      chrome.runtime.sendMessage({
-        message: 'mood_clicked',
-        mood1: mood1,
-        mood2: mood_buttons[i].innerText
-      });
-    }
+    // page = page + 1;
+    // if (page == 1) {
+    //   page1_value_chosen = mood_buttons[i].value;
+    //   mood1 = mood_buttons[i].innerText;
+    //   loadSecondPage(page1_value_chosen);
+    // }
+    // if (page == 2) {
+    //   page = 0;
+    //   // window.close();
+    //   loggedAnimation(mood_buttons[i]);
+    //   chrome.runtime.sendMessage({
+    //     message: 'mood_clicked',
+    //     mood1: mood1,
+    //     mood2: mood_buttons[i].innerText
+    //   });
+    // }
   });
+}
+
+function loggedAnimation(button) {
+  console.log("start", button.offsetLeft, button.offsetTop);
+  console.log("end", logCounter.offsetLeft, logCounter.offsetTop);
+  var startX = button.offsetLeft;
+  var startY = button.offsetTop;
+  var diffX = (logCounter.offsetLeft - button.offsetLeft) / 10;
+  var diffY = (logCounter.offsetTop - button.offsetTop) / 10;
+
+  // setTimeout(function () { window.close(); }, 2000);
+  var pos = 0;
+  var id = setInterval(frame, 100);
+  function frame() {
+    // console.log("new frame");
+    if (pos == 10) {
+      clearInterval(id);
+    } else {
+      console.log(startX + diffX * pos, startY + diffY * pos);
+      pos++;
+      button.style.top = startY + diffY * pos + 'px';
+      button.style.left = startX + diffX * pos + 'px';
+    }
+  }
 }

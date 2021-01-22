@@ -1,4 +1,5 @@
 // FIREBASE CONFIG FOR EUDAIMONIA
+
 /*
 const firebaseConfig = {
   apiKey: "AIzaSyA81iaieyP5BPXTZf9V1M_xYS-sJxRPGKc",
@@ -7,8 +8,7 @@ const firebaseConfig = {
   storageBucket: "eudaimonia-f99b5.appspot.com",
   messagingSenderId: "280495522376",
   appId: "1:280495522376:web:bf97aca351d7a867128e7d"
-};
-*/
+};*/
 
 
 // FIREBASE CONFIG FOR JOSEPH'S DATABASE

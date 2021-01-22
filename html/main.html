@@ -42,6 +42,7 @@
           width: 175px;
         }
 
+
         #bottom-button-div {
           margin: 0px;
           padding: 0px
@@ -53,6 +54,28 @@
           font-size: 6vw;
           margin: 0px;
         }
+
+        #mood-button-div {
+          {% comment %} -webkit-animation: walk-east 1.0s steps(8) infinite; {% endcomment %}
+          {% comment %} animation: walk-east 1.0s steps(8) infinite; {% endcomment %}
+        }
+
+        @-webkit-keyframes walk-east {
+        from {
+          background-color: red;
+        }
+        to {
+          background-color: blue;
+        }
+      }
+      @keyframes walk-east {
+        from {
+          background-color: red;
+        }
+        to {
+          background-color: blue;
+        }
+      }
 
 
     </style>

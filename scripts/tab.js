@@ -17,7 +17,10 @@ class Tab {
   }
 
   incSummaryTime() {
+    // console.log("incSummaryTime called");
+
     this.summaryTime += 1;
+    // console.log(`Summary Time: ${summaryTime}`);
 
     var today = getToday();
     var day = this.days.find(x => x.date == today);
@@ -35,6 +38,8 @@ class Tab {
   }
 
   incCounter() {
+    // console.log("incCounter called");
+
     this.counter += 1;
 
     var today = getToday();

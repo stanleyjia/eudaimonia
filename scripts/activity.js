@@ -88,7 +88,7 @@ class Activity {
   }
 
   addTimeInterval(domain) {
-    // console.log("addTimeInterval called");
+    console.log(`addTimeInterval called for domain: ${domain}`);
     // look for time interval with inputted domain and current date
     // toLocaleDateString removes the time portion
     var item = timeIntervalList.find(o => o.domain === domain && o.day == getToday());
@@ -102,14 +102,14 @@ class Activity {
         // there is a previous interval but not on same day
         var newInterval = new TimeInterval(getToday(), domain);
         newInterval.addInterval();
-        // console.log("2");
+        console.log("2");
         timeIntervalList.push(newInterval);
       }
     } else {
       // If there is no interval with current date and domain, create new time interval
       var newInterval = new TimeInterval(getToday(), domain);
       newInterval.addInterval();
-      // console.log("3");
+      console.log("3");
       timeIntervalList.push(newInterval);
       // console.log(newInterval);
     }

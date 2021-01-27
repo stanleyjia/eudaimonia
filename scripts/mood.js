@@ -1,7 +1,6 @@
 class Mood {
-  constructor(day, time, mood1, mood2) {
-    this.mood1 = mood1;
-    this.mood2 = mood2;
+  constructor(day, time, mood) {
+    this.mood = mood;
     this.day = day;
     this.time = time;
   }

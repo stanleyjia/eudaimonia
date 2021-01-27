@@ -24,8 +24,8 @@ var chromeTime = 0;
 var notInChromeTime = 0;
 
 // how much time using chrome before prompt to log mood (in seconds)
-const PROMPT_TIMER = 5; // 5 seconds
-// const PROMPT_TIMER = 900; // 15 minutes
+// const PROMPT_TIMER = 5; // 5 seconds
+const PROMPT_TIMER = 900; // 25 minutes
 
 
 // how much time not using chrome before counting as inactive
@@ -46,6 +46,13 @@ function showPromptIcon(status) {
     chrome.browserAction.setIcon({ path: '../img/logo/logo48.png' });
   }
 }
+
+function clearLocalData() {
+  timeIntervalList = [];
+  moodsList = [];
+  tabs = [];
+}
+
 function updateLocalVariables(user) {
   // Update Intervals and Moods List
   // Realtime Database to local storage
@@ -63,7 +70,7 @@ function updateLocalVariables(user) {
       }
       timeIntervalList.push(newInterval);
     });
-    // console.log(timeIntervalList);
+    console.log(timeIntervalList);
   });
 
 
@@ -72,7 +79,7 @@ function updateLocalVariables(user) {
     snapshot.forEach((child) => {
       // console.log(child.key, child.val());
       var data = child.val();
-      var newMood = new Mood(today, child.key, data.mood1, data.mood2);
+      var newMood = new Mood(today, child.key, data.mood);
       moodsList.push(newMood);
     });
   });
@@ -80,9 +87,9 @@ function updateLocalVariables(user) {
 // User logged in or logged out
 firebase.auth().onAuthStateChanged(function (user) {
   // console.log('auth state changed');
+  clearLocalData();
   if (user) {
     console.log(`[onAuthStateChanged] user signed in: ${user.uid}`);
-    timeIntervalList = []; // reset timeIntervalList
     currentUser = user;
     userSignedIn = true;
 
@@ -146,7 +153,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   else if (request.message === 'mood_clicked') {
     // console.log(`Mood Button clicked: ${request.mood1}, ${request.mood2} `);
     var time = getTime();
-    var mood_instance = new Mood(getToday(), time, request.mood1, request.mood2);
+    var mood_instance = new Mood(getToday(), time, request.mood);
     // check if mood was entered twice (same timestamp)
     var items = moodsList.filter(item => item.mood == mood_instance.mood && item.day == mood_instance.day && item.time == mood_instance.time);
     if (items.length == 0) {
@@ -179,7 +186,7 @@ function storeMoodsList(user) {
     var this_mood = moodsList[i];
     var timestamp = this_mood.time;
     var moodData = {
-      "mood1": this_mood.mood1
+      "mood": this_mood.mood
     };
     updates[timestamp] = moodData;
   }
@@ -189,6 +196,7 @@ function storeMoodsList(user) {
 
 function updateFirebaseDatabase() {
   // console.log("update firebase");
+  // console.log(moodsList);
   if (userSignedIn == false) {
     return;
   }
@@ -197,6 +205,7 @@ function updateFirebaseDatabase() {
   }
 
   if (moodsList != undefined && moodsList.length > 0) {
+    // console.log(moodsList);
     storeMoodsList(currentUser);
   }
 }

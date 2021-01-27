@@ -26,7 +26,7 @@ for (let i = 0; i < mood_buttons.length; i++) {
     // window.close();
     chrome.runtime.sendMessage({
       message: 'mood_clicked',
-      mood1: mood_buttons[i].innerText
+      mood: mood_buttons[i].innerText
     });
     window.location.replace('../html/success.html');
   });

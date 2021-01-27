@@ -1,0 +1,73 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Document</title>
+    <style>
+        body {
+
+            width: 200px;
+            height: 200;
+
+            text-align:center;
+
+            color: #f3f3f3;
+            font-family: "Avenir";
+            font-weight: bold;
+        }
+
+        .container {
+            padding: 5px 10px;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 0px;
+            margin-bottom: 5px;
+
+        }
+
+        .title {
+          color:#3a3a3a;
+          font-size: 1.6em;
+
+        }
+
+        .divider {
+          border-top: 3px solid #9a9a9a;
+        }
+
+        .text {
+          color:#565656;
+        }
+        #intro-text {
+          font-size: 1.3em;
+          margin-top: 10px;
+          margin-bottom: 5px;
+        }
+        #log-counter-2 {
+          color:#58a1c1;
+          font-size: 3em;
+        }
+        #outro-text {
+          font-size: 1.3em;
+          margin-top: 5px;
+        }
+
+    </style>
+    <script src="../scripts/success-init.js"></script>
+</head>
+
+<body>
+  <div class='container'>
+      <div class="title">Great job!</div>
+      <hr class="divider">
+      <div class="text" id="intro-text">You've logged</div>
+      <div id="log-counter-2">5</div>
+      <div class="text" id="outro-text">moods today!</div>
+  </div>
+</body>
+
+</html>

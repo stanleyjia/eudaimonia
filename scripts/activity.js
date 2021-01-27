@@ -2,7 +2,7 @@ class Activity {
 
 
   addTab(tab) {
-    console.log("addTab called");
+    // console.log("addTab called");
     if (this.isValidPage(tab) === true) {
       if (tab.id && (tab.id != 0)) {
         tabs = tabs || [];

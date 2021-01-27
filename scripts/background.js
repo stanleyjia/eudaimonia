@@ -16,7 +16,7 @@ var timeIntervalList = [];
 var moodsList = [];
 
 
-var promptForLog = true;
+var promptForLog = false;
 var promptForLogChanged = false;
 
 
@@ -24,8 +24,8 @@ var chromeTime = 0;
 var notInChromeTime = 0;
 
 // how much time using chrome before prompt to log mood (in seconds)
-// const PROMPT_TIMER = 15; // 15 seconds
-const PROMPT_TIMER = 900; // 15 minutes
+const PROMPT_TIMER = 5; // 5 seconds
+// const PROMPT_TIMER = 900; // 15 minutes
 
 
 // how much time not using chrome before counting as inactive
@@ -41,9 +41,9 @@ const FIREBASE_UPDATE_FREQ = 10000; // 10 seconds
 function showPromptIcon(status) {
   console.log("change icon");
   if (status) {
-    chrome.browserAction.setIcon({ path: '../img/square-32.png' });
+    chrome.browserAction.setIcon({ path: '../img/logo/logo_notif48.png' });
   } else {
-    chrome.browserAction.setIcon({ path: '../img/obj-32.png' });
+    chrome.browserAction.setIcon({ path: '../img/logo/logo48.png' });
   }
 }
 function updateLocalVariables(user) {
@@ -63,14 +63,14 @@ function updateLocalVariables(user) {
       }
       timeIntervalList.push(newInterval);
     });
-    console.log(timeIntervalList);
+    // console.log(timeIntervalList);
   });
 
 
   // Update Local Moods -- insert into Moods List
   db.ref(`moods/${user.uid}/${today}`).once("value", function (snapshot) {
     snapshot.forEach((child) => {
-      console.log(child.key, child.val());
+      // console.log(child.key, child.val());
       var data = child.val();
       var newMood = new Mood(today, child.key, data.mood1, data.mood2);
       moodsList.push(newMood);
@@ -155,6 +155,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       console.log("[mood clicked] mood already logged");
     }
     // Reset prompt
+    chromeTime = 0;
+    notInChromeTime = 0;
     promptForLog = false;
     showPromptIcon(promptForLog);
 
@@ -177,8 +179,7 @@ function storeMoodsList(user) {
     var this_mood = moodsList[i];
     var timestamp = this_mood.time;
     var moodData = {
-      "mood1": this_mood.mood1,
-      "mood2": this_mood.mood2
+      "mood1": this_mood.mood1
     };
     updates[timestamp] = moodData;
   }
@@ -187,6 +188,7 @@ function storeMoodsList(user) {
 
 
 function updateFirebaseDatabase() {
+  // console.log("update firebase");
   if (userSignedIn == false) {
     return;
   }
@@ -220,7 +222,7 @@ function bgCheck() {
     chromeTime = 0;
   }
 
-  // console.log(tabs);
+  // console.log(moodsList);
 
 
   // console.log("checking background");
@@ -229,9 +231,12 @@ function bgCheck() {
     if (currentWindow != undefined) {
       // console.log("HERE 1");
       if (currentWindow.focused) {
-        notInChromeTime = 0;
-        chromeTime += 1;
-        // console.log(`Chrome time: ${chromeTime} `);
+        // console.log(promptForLog);
+        if (promptForLog == false) {
+          notInChromeTime = 0;
+          chromeTime += 1;
+          // console.log(`Chrome time: ${chromeTime} `);
+        }
         // get active tab in focused window
         var activeTab = currentWindow.tabs.find(t => t.active === true);
         if (activeTab != undefined && activity.isValidPage(activeTab)) {
@@ -261,12 +266,14 @@ function bgCheck() {
         }
       } else {
         // not in chrome
-        notInChromeTime += 1;
-        // console.log(`not using chrome: ${notInChromeTime}`);
-        if (notInChromeTime >= INACTIVE_TIMER) {
-          // console.log("RESET ACTIVE TIMER");
-          chromeTime = 0;
-          notInChromeTime = 0;
+        if (promptForLog == false) {
+          notInChromeTime += 1;
+          // console.log(`not using chrome: ${notInChromeTime}`);
+          if (notInChromeTime >= INACTIVE_TIMER) {
+            // console.log("RESET ACTIVE TIMER");
+            chromeTime = 0;
+            notInChromeTime = 0;
+          }
         }
         activity.closeIntervalForCurrentTab();
       }
@@ -287,7 +294,7 @@ function mainTRacker(activeUrl, tab, activeTab) {
 
 // Check if on Youtube or Netflix
 function checkDOM(state, activeUrl, tab, activeTab) {
-  console.log("checkDom running");
+  // console.log("checkDom running");
   if (state === 'idle' && isDomainEquals(activeUrl, "youtube.com")) {
     // trackForYT(mainTRacker, activeUrl, tab, activeTab);
   } else if (state === 'idle' && isDomainEquals(activeUrl, "netflix.com")) {

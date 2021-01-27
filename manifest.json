@@ -4,16 +4,15 @@
   "version": "0.1.0",
   "manifest_version": 2,
   "icons": {
-    "16": "./img/obj-16.png",
-    "32": "./img/obj-32.png",
-    "48": "./img/obj-48.png",
-    "128": "./img/obj-128.png"
+    "16": "./img/logo/logo16.png",
+    "32": "./img/logo/logo32.png",
+    "48": "./img/logo/logo48.png",
+    "128": "./img/logo/logo128.png"
   },
   "background": {
     "page": "./html/background.html",
     "persistent": false
   },
-  "options_page": "./html/options.html",
   "browser_action": {
     "default_popup": "./html/main.html"
   },

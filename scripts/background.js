@@ -25,7 +25,7 @@ var notInChromeTime = 0;
 
 // how much time using chrome before prompt to log mood (in seconds)
 // const PROMPT_TIMER = 5; // 5 seconds
-const PROMPT_TIMER = 900; // 25 minutes
+const PROMPT_TIMER = 1500; // 25 minutes
 
 
 // how much time not using chrome before counting as inactive

@@ -76,38 +76,29 @@ class Activity {
     }
   }
 
-  setCurrentActiveTab(domain) {
-    this.closeIntervalForCurrentTab();
-    currentTab = domain;
-    this.addTimeInterval(domain);
-  }
-
-  clearCurrentActiveTab() {
-    this.closeIntervalForCurrentTab();
-    currentTab = '';
-  }
-
   addTimeInterval(domain) {
-    console.log(`addTimeInterval called for domain: ${domain}`);
+    // console.log(`[addTimeInterval] called for domain: ${domain}`);
+    console.log(timeIntervalList);
     // look for time interval with inputted domain and current date
     // toLocaleDateString removes the time portion
-    var item = timeIntervalList.find(o => o.domain === domain && o.day == getToday());
+    var today = getToday();
+    var item = timeIntervalList.find(o => o.domain === domain && o.day == today);
     if (item != undefined) {
-      if (item.day == getToday()) {
+      if (item.day == today) {
         // if there is already item on same day
         item.addInterval();
-        // console.log("1");
+        console.log("1");
       }
       else {
         // there is a previous interval but not on same day
-        var newInterval = new TimeInterval(getToday(), domain);
+        var newInterval = new TimeInterval(today, domain);
         newInterval.addInterval();
         console.log("2");
         timeIntervalList.push(newInterval);
       }
     } else {
       // If there is no interval with current date and domain, create new time interval
-      var newInterval = new TimeInterval(getToday(), domain);
+      var newInterval = new TimeInterval(today, domain);
       newInterval.addInterval();
       console.log("3");
       timeIntervalList.push(newInterval);
@@ -115,8 +106,20 @@ class Activity {
     }
   }
 
+  setCurrentActiveTab(domain) {
+    // console.log(`[setCurrentActiveTab] setting current domain to ${domain}`);
+    this.closeIntervalForCurrentTab();
+    currentTab = domain;
+    this.addTimeInterval(domain);
+  }
+
+  clearCurrentActiveTab() {
+    // console.log('[clearCurrentActiveTab] running');
+    this.closeIntervalForCurrentTab();
+    currentTab = '';
+  }
   closeIntervalForCurrentTab() {
-    // console.log('[closeIntervalForCurrentTab] running');
+    // console.log(`[closeIntervalForCurrentTab] ${currentTab}`);
     // Stop interval for tab item
     if (currentTab !== '' && timeIntervalList != undefined) {
       var item = timeIntervalList.find(o => o.domain === currentTab && o.day == getToday());
@@ -124,6 +127,7 @@ class Activity {
         item.closeInterval();
     }
     currentTab = '';
+    // console.log(`[closeIntervalForCurrentTab] finished running ${currentTab}`);
   }
 
   // isNeedNotifyView(domain, tab) {

@@ -34,7 +34,9 @@ const INACTIVE_TIMER = 180; // 3 minutes
 
 
 // how often to update firebase database (timeIntervals and moods)
-const FIREBASE_UPDATE_FREQ = 10000; // 10 seconds
+// const FIREBASE_UPDATE_FREQ = 10000; // 10 seconds
+const FIREBASE_UPDATE_FREQ = 1000; // 1 seconds
+
 
 
 
@@ -233,8 +235,15 @@ function bgCheck() {
 
   // console.log(moodsList);
 
+  chrome.windows.getAll(function (windows) {
+    // console.log(windows.length);
+    if (windows.length != 0) {
+      getLastFocused();
+    }
+  });
+}
 
-  // console.log("checking background");
+function getLastFocused() {
   chrome.windows.getLastFocused({ populate: true }, function (currentWindow) {
     // if currentWindow is not a chrome settings page
     if (currentWindow != undefined) {
@@ -260,15 +269,15 @@ function bgCheck() {
             activity.addTab(activeTab);
           }
           if (tab !== undefined) {
-            if (currentTab !== tab.url) {
-              // Set time interval for new current tab
-              activity.setCurrentActiveTab(tab.url);
-            }
-            // check if its been idle for 30 seconds
+            // if idle for time (in seconds) stop current interval
             chrome.idle.queryState(15, function (state) {
               // console.log(state);
               if (state === 'active') {
-                mainTRacker(activeUrl, tab, activeTab);
+                if (currentTab !== tab.url) {
+                  // Set time interval for new current tab
+                  // console.log("set time interval for new current tab");
+                  activity.setCurrentActiveTab(tab.url);
+                }
               } else checkDOM(state, activeUrl, tab, activeTab);
             });
           }
@@ -288,18 +297,8 @@ function bgCheck() {
       }
     }
   });
-
-
 }
 
-
-function mainTRacker(activeUrl, tab, activeTab) {
-  // tab.incSummaryTime();
-  // var today = getToday();
-  // var summary = tab.days.find(s => s.date === today).summary;
-  // console.log(timeIntervalList);
-  // console.log(tab.getTodayTime());
-}
 
 // Check if on Youtube or Netflix
 function checkDOM(state, activeUrl, tab, activeTab) {

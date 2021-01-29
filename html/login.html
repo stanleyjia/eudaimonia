@@ -29,15 +29,12 @@
             align-items: center;
 
             background-color: #f3f3f3;
-            font-size: 2em;
+
             color: #565656;
             font-family: "Avenir";
             font-weight: bold;
         }
 
-        sign_in_title {
-          color: 565656;
-        }
 
         #my_sign_in {
             position: absolute;
@@ -94,6 +91,27 @@
             cursor: pointer;
             z-index: 1000;
         }
+
+
+        #title-div {
+
+        }
+
+        #logo-img {
+
+        }
+        #logo-img-div {
+          margin-left:0px;
+          display: inline;
+          vertical-align:middle;
+        }
+
+        #sign_in_title {
+          display: inline;
+          font-size:1.8em;
+          padding: 10px 10px;
+          vertical-align:middle;
+        }
     </style>
 </head>
 
@@ -102,7 +120,12 @@
     <!--<div id="my_sign_in" class="sign_in_no_hover">
         <span id="my_span">Sign In</span>-->
     <!--</div> -->
-    <div id='sign_in_title'>Eudaimonia</div>
+    <div id="title-div">
+      <div id="logo-img-div">
+      <img src="/img/logo/logo32.png" id="logo-img">
+      </div>
+      <div id='sign_in_title'>Eudaimonia</div>
+    </div>
     <div id="sign_in_options"></div>
 
     <script src="../scripts/login-script.js"></script>

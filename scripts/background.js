@@ -269,8 +269,8 @@ function getLastFocused() {
             activity.addTab(activeTab);
           }
           if (tab !== undefined) {
-            // if idle for time (in seconds) stop current interval
-            chrome.idle.queryState(15, function (state) {
+            // if idle for time (in seconds) stop current interval (300 = 5 minutes)
+            chrome.idle.queryState(300, function (state) {
               // console.log(state);
               if (state === 'active') {
                 if (currentTab !== tab.url) {

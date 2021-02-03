@@ -10,10 +10,12 @@ chrome.runtime.sendMessage({ message: 'get_moods_count' }, function (response) {
 
   }
 });
+const DELAY_BEFORE_CHANGE_COUNTER = 500;
+const DELAY_BEFORE_CLOSE_WINDOW = 500;
 
 // setTimeout(function () { window.close(); }, 1000);
 function closeWindowAfterWait() {
-  setTimeout(function () { window.close(); }, 600);
+  setTimeout(function () { window.close(); }, DELAY_BEFORE_CLOSE_WINDOW);
 }
 function setLogCounter(logCount) {
   // console.log("setLogCounter Run");
@@ -30,7 +32,7 @@ function setLogCounter(logCount) {
       outroText.innerText = `mood today!`;
     }
     closeWindowAfterWait();
-  }, 800);
+  }, DELAY_BEFORE_CHANGE_COUNTER);
 
 }
 

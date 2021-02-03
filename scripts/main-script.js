@@ -15,6 +15,11 @@ document.querySelector('#bottom-button').addEventListener('click', () => {
   });
 });
 
+document.querySelector('#dashboard').addEventListener('click', () => {
+  var newURL = "https://projecteudaimonia.net";
+  chrome.tabs.create({ url: newURL });
+});
+
 const mood_buttons = document.querySelectorAll(".mood-button");
 
 

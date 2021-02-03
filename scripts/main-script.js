@@ -32,29 +32,29 @@ for (let i = 0; i < mood_buttons.length; i++) {
   });
 }
 
-function loggedAnimation(button) {
-  console.log("start", button.offsetLeft, button.offsetTop);
-  console.log("end", logCounter.offsetLeft, logCounter.offsetTop);
-  var startX = button.offsetLeft;
-  var startY = button.offsetTop;
-  var frameCount = 100;
-  var diffX = (logCounter.offsetLeft - button.offsetLeft) / frameCount;
-  var diffY = (logCounter.offsetTop - button.offsetTop) / frameCount;
+// function loggedAnimation(button) {
+//   console.log("start", button.offsetLeft, button.offsetTop);
+//   console.log("end", logCounter.offsetLeft, logCounter.offsetTop);
+//   var startX = button.offsetLeft;
+//   var startY = button.offsetTop;
+//   var frameCount = 100;
+//   var diffX = (logCounter.offsetLeft - button.offsetLeft) / frameCount;
+//   var diffY = (logCounter.offsetTop - button.offsetTop) / frameCount;
 
-  plusOne.classList.add('horizTranslate');
+//   plusOne.classList.add('horizTranslate');
 
-  // setTimeout(function () { window.close(); }, 2000);
-  var pos = 0;
-  // var id = setInterval(frame, 200);
-  function frame() {
-    console.log("frame", pos);
-    if (pos > frameCount) {
-      clearInterval(id);
-    } else {
-      // console.log(startX + diffX * pos, startY + diffY * pos);
-      pos++;
-      plusOne.style.top = startY + diffY * pos + 'px';
-      plusOne.style.left = startX + diffX * pos + 'px';
-    }
-  }
-}
+//   // setTimeout(function () { window.close(); }, 2000);
+//   var pos = 0;
+//   // var id = setInterval(frame, 200);
+//   function frame() {
+//     console.log("frame", pos);
+//     if (pos > frameCount) {
+//       clearInterval(id);
+//     } else {
+//       // console.log(startX + diffX * pos, startY + diffY * pos);
+//       pos++;
+//       plusOne.style.top = startY + diffY * pos + 'px';
+//       plusOne.style.left = startX + diffX * pos + 'px';
+//     }
+//   }
+// }

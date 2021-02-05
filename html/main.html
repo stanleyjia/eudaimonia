@@ -26,20 +26,6 @@
             margin: 0px;
             overflow: auto;
         }
-        #dashboard {
-            font-size: 12px;
-            margin:5px 0px 0px 10px;
-            font-weight: bold;
-            color:#888888;
-            overflow: auto;
-            cursor: pointer;
-            text-align: left;
-            width: 70px;
-        }
-        #dashboard img {
-          width: auto;
-          height: 15px;
-        }
 
         #mood-table-title {
             text-align: center;
@@ -51,7 +37,7 @@
         }
         #container {
           text-align:center;
-          padding: 5px 30px 15px 30px;
+          padding: 15px 30px 15px 30px;
         }
 
         #mood-table {
@@ -65,7 +51,9 @@
 
         #mood-button-div {
           width: 200px;
-          margin-bottom: 3px;
+          margin-top: 4px;
+          margin-bottom: 4px;
+
         }
 
         .mood-button {
@@ -81,14 +69,10 @@
           font-weight: 550;
           border-radius: 4px;
           cursor: pointer;
+          display: inline-block;
+          vertical-align: top;
         }
-        .blue-button:hover {
-            background-color: #4f92b0;
-          }
 
-        .blue-button:active {
-          background-color: #4a89a5;
-        }
 
 
         #bottom-button-div {
@@ -97,15 +81,35 @@
           overflow:visible;
         }
 
-        #bottom-button{
-          height: 30px;
-          width: 80px;
+        .gray-button {
+          background-color: #b1b1b1;
+          outline-style: none;
+          border: none;
+          color: #f3f3f3;
+          font-weight: 550;
+          border-radius: 4px;
+          cursor: pointer;
+          height: 35px;
+          width: 90px;
+          margin-top: 0px;
+          display: inline-block;
+          vertical-align: top;
         }
+        .gray-button:hover {
+            background-color: #989898;
+          }
+
+        .gray-button:active {
+          background-color: #858585;
+        }
+
 
         #log-counter {
           color:#3a3a3a;
           font-size: 6vw;
-          margin: 0px;
+          margin: 8px 0 0 0;
+          display: inline-block;
+          vertical-align: top;
 
         }
         #plus-one {
@@ -127,14 +131,19 @@
           border-top: 3px solid #9a9a9a;
         }
 
+        #bottom-divider {
+          margin-block-start: 0.3em;
+          margin-block-end: 0.0em;
+        }
+
 
     </style>
 </head>
 <body>
-      <div id='dashboard'>
-      <!--img src="../img/bar-chart.png">-->
+      <!--<div id='dashboard'>
+      <img src="../img/bar-chart.png">
       Dashboard
-      </div>
+      </div>-->
       <!--<div id="plus-one">+1</div>-->
       <div id='container'>
         <div id='mood-table-title-div'>
@@ -163,9 +172,13 @@
             <button class="mood-button blue-button" value=2>Lonely</button>
           </div>
         </div>
+        <hr class="divider" id="bottom-id">
         <div id="bottom-button-div">
-          <button class="blue-button" id="bottom-button">Sign out</button>
+          <button class="gray-button" id="dashboard">Dashboard</button>
+          <button class="gray-button" id="sign-out">Sign out</button>
         </div>
+
+
         <div>
           <span id="log-counter">Logged Today: `${moodCount}`</span>
         </div>

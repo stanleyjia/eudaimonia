@@ -7,7 +7,7 @@ chrome.runtime.sendMessage({ message: 'get_moods_count' }, function (response) {
   }
 });
 
-document.querySelector('#bottom-button').addEventListener('click', () => {
+document.querySelector('#sign-out').addEventListener('click', () => {
   chrome.runtime.sendMessage({ message: 'sign_out' }, function (response) {
     if (response.message === 'success') {
       window.location.replace('./login.html');

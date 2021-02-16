@@ -1,10 +1,10 @@
 function checkUserExists(user) {
   db.ref(`users/${user.uid}`).once("value", snapshot => {
     if (snapshot.exists()) {
-      console.log("[checkUserExists] user exists");
+      // console.log("[checkUserExists] user exists");
       userExists = true;
     } else {
-      console.log("[checkUserExists] user doesn't exist");
+      // console.log("[checkUserExists] user doesn't exist");
       createUser(user);
     }
   });
@@ -18,5 +18,5 @@ function createUser(user) {
     uid: user.uid
   });
   userExists = true;
-  console.log("[createUser] user created");
+  // console.log("[createUser] user created");
 }

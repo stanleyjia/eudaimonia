@@ -2,7 +2,7 @@
 var logCounter = document.getElementById("log-counter");
 chrome.runtime.sendMessage({ message: 'get_moods_count' }, function (response) {
   if (response.message === 'success') {
-    console.log(response.count);
+    // console.log(response.count);
     logCounter.innerText = "Logged Today: " + response.count;
   }
 });
@@ -20,7 +20,7 @@ document.querySelector('#dashboard').addEventListener('click', () => {
   chrome.tabs.create({ url: newURL });
 });
 
-const mood_buttons = document.querySelectorAll(".mood-button");
+const mood_buttons = document.querySelectorAll(".blue-button");
 
 
 var plusOne = document.getElementById("plus-one");

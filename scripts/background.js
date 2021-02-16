@@ -1,5 +1,11 @@
 
 var db = firebase.database();
+// if emulator,
+// if (location.hostname === "localhost") {
+//   // Point to the RTDB emulator running on localhost.
+//   db.useEmulator("localhost", 9000);
+// }
+// console.log(`Location ${location}`);
 
 // Indicator variables
 var userExists = false;
@@ -16,6 +22,7 @@ var timeIntervalList = [];
 var moodsList = [];
 
 
+
 var promptForLog = false;
 var promptForLogChanged = false;
 
@@ -25,7 +32,7 @@ var notInChromeTime = 0;
 
 // how much time using chrome before prompt to log mood (in seconds)
 // const PROMPT_TIMER = 5; // 5 seconds
-const PROMPT_TIMER = 1500; // 25 minutes
+const PROMPT_TIMER = 1800; // 30 minutes
 
 
 // how much time not using chrome before counting as inactive
@@ -41,7 +48,7 @@ const FIREBASE_UPDATE_FREQ = 1000; // 1 seconds
 
 
 function showPromptIcon(status) {
-  console.log("change icon");
+  // console.log("change icon");
   if (status) {
     chrome.browserAction.setIcon({ path: '../img/logo/logo_notif48.png' });
   } else {
@@ -72,9 +79,8 @@ function updateLocalVariables(user) {
       }
       timeIntervalList.push(newInterval);
     });
-    console.log(timeIntervalList);
+    // console.log(timeIntervalList);
   });
-
 
   // Update Local Moods -- insert into Moods List
   db.ref(`moods/${user.uid}/${today}`).once("value", function (snapshot) {
@@ -91,7 +97,7 @@ firebase.auth().onAuthStateChanged(function (user) {
   // console.log('auth state changed');
   clearLocalData();
   if (user) {
-    console.log(`[onAuthStateChanged] user signed in: ${user.uid}`);
+    // console.log(`[onAuthStateChanged] user signed in: ${user.uid}`);
     currentUser = user;
     userSignedIn = true;
 
@@ -99,7 +105,7 @@ firebase.auth().onAuthStateChanged(function (user) {
     updateLocalVariables(user);
   }
   else {
-    console.log("[onAuthStateChanged] user not signed in");
+    // console.log("[onAuthStateChanged] user not signed in");
     userSignedIn = false;
   }
 });
@@ -108,12 +114,12 @@ firebase.auth().onAuthStateChanged(function (user) {
 chrome.runtime.onInstalled.addListener(function (details) {
   if (details.reason == 'install') {
     // newly installed
-    console.log("Extension Installed");
+    // console.log("Extension Installed");
 
   }
   if (details.reason == 'update') {
     // newly updated
-    console.log("Extension Updated");
+    // console.log("Extension Updated");
   }
 });
 
@@ -153,15 +159,16 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     sendResponse({ message: 'success' });
   }
   else if (request.message === 'mood_clicked') {
-    // console.log(`Mood Button clicked: ${request.mood1}, ${request.mood2} `);
+    // console.log(`Mood Button clicked: ${request.mood}`);
     var time = getTime();
     var mood_instance = new Mood(getToday(), time, request.mood);
     // check if mood was entered twice (same timestamp)
     var items = moodsList.filter(item => item.mood == mood_instance.mood && item.day == mood_instance.day && item.time == mood_instance.time);
     if (items.length == 0) {
       moodsList.push(mood_instance);
+      updateMood(mood_instance);
     } else {
-      console.log("[mood clicked] mood already logged");
+      // console.log("[mood clicked] mood already logged");
     }
     // Reset prompt
     chromeTime = 0;
@@ -179,7 +186,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   return true;
 });
 
-
+function updateMood(moodObj) {
+  var dateStr = getToday();
+  var updates = {};
+  var moodData = {
+    "mood": moodObj.mood
+  };
+  var timestamp = moodObj.time;
+  updates[timestamp] = moodData;
+  db.ref(`moods/${currentUser.uid}/${dateStr}/`).update(updates);
+  // console.log('[updateMood] called');
+}
 function storeMoodsList(user) {
   var dateStr = getToday();
   var updates = {};
@@ -207,8 +224,10 @@ function updateFirebaseDatabase() {
   }
 
   if (moodsList != undefined && moodsList.length > 0) {
-    // console.log(moodsList);
-    storeMoodsList(currentUser);
+    //   // console.log(moodsList);
+    var dateStr = getToday();
+    moodsList = moodsList.filter(mood => mood.day == dateStr);
+    //   storeMoodsList(currentUser);
   }
 }
 

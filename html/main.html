@@ -56,11 +56,6 @@
 
         }
 
-        .mood-button {
-          height: 45px;
-          width: 90px;
-        }
-
         .blue-button {
           background-color: #58a1c1;
           outline-style: none;
@@ -71,8 +66,27 @@
           cursor: pointer;
           display: inline-block;
           vertical-align: top;
+          height: 45px;
+          width: 90px;
         }
 
+        .blue-button:hover {
+            background-color: #4d90ad !important;
+            -webkit-transition: none !important;
+        -moz-transition: none !important;
+        -ms-transition: none !important;
+        -o-transition: none !important;
+        transition: none !important;
+        -webkit-transform: none !important;
+        -moz-transform: none !important;
+        -ms-transform: none !important;
+        -o-transform: none !important;
+        transform: none !important;
+          }
+
+        .blue-button:active {
+          background-color: #44819c !important;
+        }
 
 
         #bottom-button-div {
@@ -96,11 +110,11 @@
           vertical-align: top;
         }
         .gray-button:hover {
-            background-color: #989898;
+            background-color: #989898 !important;
           }
 
         .gray-button:active {
-          background-color: #858585;
+          background-color: #858585 !important;
         }
 
 
@@ -152,24 +166,24 @@
         <hr class="divider">
         <div id="mood-table">
           <div id="mood-button-div">
-            <button class="mood-button blue-button" value=1>Happy</button>
-            <button class="mood-button blue-button" value=2>Energized</button>
+            <button class="blue-button">Happy</button>
+            <button class="blue-button">Energized</button>
           </div>
           <div id="mood-button-div">
-            <button class="mood-button blue-button" value=1>Calm</button>
-            <button class="mood-button blue-button" value=2>Focused</button>
+            <button class="blue-button" type="button">Calm</button>
+            <button class="blue-button" type="button">Focused</button>
           </div>
           <div id="mood-button-div">
-            <button class="mood-button blue-button" value=1>Distracted</button>
-            <button class="mood-button blue-button" value=2>Anxious</button>
+            <button class="blue-button" type="button">Distracted</button>
+            <button class="blue-button" type="button">Anxious</button>
           </div>
           <div id="mood-button-div">
-            <button class="mood-button blue-button" value=1>Tired</button>
-            <button class="mood-button blue-button" value=2>Frustrated</button>
+            <button class="blue-button" type="button">Tired</button>
+            <button class="blue-button" type="button">Frustrated</button>
           </div>
           <div id="mood-button-div">
-            <button class="mood-button blue-button" value=1>Sad</button>
-            <button class="mood-button blue-button" value=2>Lonely</button>
+            <button class="blue-button" type="button">Sad</button>
+            <button class="blue-button" type="button">Lonely</button>
           </div>
         </div>
         <hr class="divider" id="bottom-id">

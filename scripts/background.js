@@ -39,12 +39,14 @@ const PROMPT_TIMER = 1800; // 30 minutes (keep)
 
 // how much time not using chrome before counting as inactive
 // const INACTIVE_TIMER = 5; // 5 seconds
-const INACTIVE_TIMER = 180; // 3 minutes -> 5 minutes
+// const INACTIVE_TIMER = 180; // 3 minutes
+const INACTIVE_TIMER = 300; // 5 minutes
+
 
 
 // how often to update firebase database (timeIntervals and moods)
 // const FIREBASE_UPDATE_FREQ = 10000; // 10 seconds
-const FIREBASE_UPDATE_FREQ = 1000; // 1 seconds
+const FIREBASE_UPDATE_FREQ = 2000; // 1 seconds
 
 
 

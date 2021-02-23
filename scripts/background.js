@@ -21,6 +21,8 @@ var activity = new Activity();
 var timeIntervalList = [];
 var moodsList = [];
 
+var totalWebTime = {};
+var totalMoodCount = {};
 
 
 var promptForLog = false;
@@ -32,12 +34,12 @@ var notInChromeTime = 0;
 
 // how much time using chrome before prompt to log mood (in seconds)
 // const PROMPT_TIMER = 5; // 5 seconds
-const PROMPT_TIMER = 1800; // 30 minutes
+const PROMPT_TIMER = 1800; // 30 minutes (keep)
 
 
 // how much time not using chrome before counting as inactive
 // const INACTIVE_TIMER = 5; // 5 seconds
-const INACTIVE_TIMER = 180; // 3 minutes
+const INACTIVE_TIMER = 180; // 3 minutes -> 5 minutes
 
 
 // how often to update firebase database (timeIntervals and moods)
@@ -66,8 +68,23 @@ function updateLocalVariables(user) {
   // Update Intervals and Moods List
   // Realtime Database to local storage
 
-  // get current time intervals and insert into timeIntervalList
   var today = getToday(); // 12/29/2000
+  // get totalWebTime from firebase
+  db.ref(`totalWebTime/${user.uid}/`).once("value", function (snapshot) {
+    snapshot.forEach((child) => {
+      // console.log(child.key, child.val());
+      totalWebTime[child.key] = child.val();
+    });
+  });
+
+  db.ref(`totalMoodCount/${user.uid}/`).once("value", function (snapshot) {
+    snapshot.forEach((child) => {
+      console.log(child.key, child.val());
+      totalMoodCount[child.key] = child.val();
+    });
+  });
+
+  // get current time intervals and insert into timeIntervalList
   db.ref(`web/${user.uid}/${today}`).once("value", function (snapshot) {
     snapshot.forEach((child) => {
       // console.log(child.key, child.val());
@@ -166,6 +183,8 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     var items = moodsList.filter(item => item.mood == mood_instance.mood && item.day == mood_instance.day && item.time == mood_instance.time);
     if (items.length == 0) {
       moodsList.push(mood_instance);
+      incrementTotalMoodCount(mood_instance.mood);
+      updateTotalMoodCount();
       updateMood(mood_instance);
     } else {
       // console.log("[mood clicked] mood already logged");
@@ -212,6 +231,26 @@ function storeMoodsList(user) {
   db.ref(`moods/${user.uid}/${dateStr}/`).update(updates);
 }
 
+function updateTotalWebTime(totalWebTime) {
+  db.ref(`totalWebTime/${currentUser.uid}/`).update(totalWebTime);
+}
+
+function incrementTotalMoodCount(mood) {
+  if (mood in totalMoodCount) {
+    totalMoodCount[mood] += 1;
+  } else {
+    totalMoodCount[mood] = 1;
+  }
+  // console.log(totalMoodCount);
+}
+
+function updateTotalMoodCount() {
+  // console.log(totalMoodCount);
+  db.ref(`totalMoodCount/${currentUser.uid}/`).update(totalMoodCount);
+}
+
+
+// totalMoodCount[child.key] = child.val();
 
 function updateFirebaseDatabase() {
   // console.log("update firebase");
@@ -229,8 +268,13 @@ function updateFirebaseDatabase() {
     moodsList = moodsList.filter(mood => mood.day == dateStr);
     //   storeMoodsList(currentUser);
   }
+  if (totalWebTime != undefined && isEmpty(totalWebTime) == false) {
+    updateTotalWebTime(totalWebTime);
+  }
 }
-
+function isEmpty(obj) {
+  return Object.keys(obj).length === 0;
+}
 
 function bgCheck() {
   // runs each second
@@ -251,6 +295,7 @@ function bgCheck() {
     promptForLog = true;
     chromeTime = 0;
   }
+  // console.log(totalWebTime);
 
   // console.log(moodsList);
 
@@ -263,6 +308,7 @@ function bgCheck() {
 }
 
 function getLastFocused() {
+  // console.log("getLastFocused Run");
   chrome.windows.getLastFocused({ populate: true }, function (currentWindow) {
     // if currentWindow is not a chrome settings page
     if (currentWindow != undefined) {
@@ -296,8 +342,13 @@ function getLastFocused() {
                   // Set time interval for new current tab
                   // console.log("set time interval for new current tab");
                   activity.setCurrentActiveTab(tab.url);
+                  // activeTab.incSummaryTime();
                 }
-              } else checkDOM(state, activeUrl, tab, activeTab);
+                incrementTotalWebTime(tab.url);
+              } else {
+                // inactive
+                checkDOM(state, activeUrl, tab, activeTab);
+              }
             });
           }
         }
@@ -316,6 +367,15 @@ function getLastFocused() {
       }
     }
   });
+}
+function incrementTotalWebTime(domain) {
+  // console.log("incremental total web time");
+  var encodedDomain = encodeURL(domain);
+  if (encodedDomain in totalWebTime) {
+    totalWebTime[encodedDomain] += 1;
+  } else {
+    totalWebTime[encodedDomain] = 1;
+  }
 }
 
 

@@ -46,7 +46,7 @@ const INACTIVE_TIMER = 300; // 5 minutes
 
 // how often to update firebase database (timeIntervals and moods)
 // const FIREBASE_UPDATE_FREQ = 10000; // 10 seconds
-const FIREBASE_UPDATE_FREQ = 2000; // 1 seconds
+const FIREBASE_UPDATE_FREQ = 2000; // 2 seconds
 
 
 
@@ -81,7 +81,7 @@ function updateLocalVariables(user) {
 
   db.ref(`totalMoodCount/${user.uid}/`).once("value", function (snapshot) {
     snapshot.forEach((child) => {
-      console.log(child.key, child.val());
+      // console.log(child.key, child.val());
       totalMoodCount[child.key] = child.val();
     });
   });
@@ -298,7 +298,6 @@ function bgCheck() {
     chromeTime = 0;
   }
   // console.log(totalWebTime);
-
   // console.log(moodsList);
 
   chrome.windows.getAll(function (windows) {
@@ -320,7 +319,7 @@ function getLastFocused() {
         if (promptForLog == false) {
           notInChromeTime = 0;
           chromeTime += 1;
-          // console.log(`Chrome time: ${chromeTime} `);
+          console.log(`Chrome time: ${chromeTime} `);
         }
         // get active tab in focused window
         var activeTab = currentWindow.tabs.find(t => t.active === true);
@@ -336,9 +335,10 @@ function getLastFocused() {
             activity.addTab(activeTab);
           }
           if (tab !== undefined) {
-            // if idle for time (in seconds) stop current interval (300 = 5 minutes)
-            chrome.idle.queryState(300, function (state) {
-              // console.log(state);
+            // if idle for time (in seconds) stop current interval (300 = 5 minutes, 600 = 10 minutes)
+            const IDLE_TIMER = 600;
+            chrome.idle.queryState(IDLE_TIMER, function (state) {
+              console.log(state);
               if (state === 'active') {
                 if (currentTab !== tab.url) {
                   // Set time interval for new current tab
@@ -358,11 +358,12 @@ function getLastFocused() {
         // not in chrome
         if (promptForLog == false) {
           notInChromeTime += 1;
-          // console.log(`not using chrome: ${notInChromeTime}`);
+          console.log(`not using chrome: ${notInChromeTime}`);
           if (notInChromeTime >= INACTIVE_TIMER) {
-            // console.log("RESET ACTIVE TIMER");
+            console.log("RESET ACTIVE TIMER");
             chromeTime = 0;
             notInChromeTime = 0;
+
           }
         }
         activity.closeIntervalForCurrentTab();
@@ -390,6 +391,14 @@ function checkDOM(state, activeUrl, tab, activeTab) {
     // trackForNetflix(mainTRacker, activeUrl, tab, activeTab);
   } else {
     // Idle for 30 seconds
+    console.log("Idle for 30 seconds");
+    // console.log("RESET ACTIVE TIMER");
+    console.log("HERE");
+    chromeTime = 0;
+    notInChromeTime = 0;
+    promptForLog = false;
+    promptForLogChanged = true;
+
     activity.closeIntervalForCurrentTab();
   }
 }

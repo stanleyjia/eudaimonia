@@ -5,7 +5,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../scripts/main-init.js"></script>
     <title>Document</title>
     <style>
         body {
@@ -40,7 +39,7 @@
           padding: 15px 30px 15px 30px;
         }
 
-        #mood-table {
+        #friends-table-div {
           display: flex;
             flex-direction: column;
             justify-content: space-evenly;
@@ -112,95 +111,53 @@
         .gray-button:hover {
             background-color: #989898 !important;
           }
-
         .gray-button:active {
           background-color: #858585 !important;
         }
-
-
-        #log-counter {
-          color:#3a3a3a;
-          font-size: 0.5em;
-          margin: 8px 0 0 0;
-          display: inline-block;
-          vertical-align: top;
-
-        }
-        #plus-one {
-          position: absolute;
-          color:black;
-        }
-        #plus-one.horizTranslate {
-          margin-left: 145px;
-          margin-top: 330px;
-          -webkit-transition: all 3s linear;
-          -moz-transition: 3s;
-          -ms-transition: 3s;
-          -o-transition: 3s;
-        }
-
         .divider {
           margin-block-start: 0.3em;
           margin-block-end: 0.3em;
           border-top: 3px solid #9a9a9a;
         }
-
         #bottom-divider {
           margin-block-start: 0.3em;
           margin-block-end: 0.0em;
+        }
+
+        .table-header {
+          color:black;
+          font-size: 15px;
+        }
+        .table-text{
+          color:black;
+          font-size: 15px;
+          font-family: "Avenir";
+          font-weight: normal;
         }
 
 
     </style>
 </head>
 <body>
-      <!--<div id='dashboard'>
-      <img src="../img/bar-chart.png">
-      Dashboard
-      </div>-->
-      <!--<div id="plus-one">+1</div>-->
       <div id='container'>
         <div id='mood-table-title-div'>
-          <h3 id='mood-table-title'>Pick a Mood</h3>
+          <h3 id='mood-table-title'>Friends</h3>
         </div>
         <hr class="divider">
-        <div id="mood-table">
-          <div id="mood-button-div">
-            <button class="blue-button">Happy</button>
-            <button class="blue-button">Energized</button>
-          </div>
-          <div id="mood-button-div">
-            <button class="blue-button" type="button">Calm</button>
-            <button class="blue-button" type="button">Focused</button>
-          </div>
-          <div id="mood-button-div">
-            <button class="blue-button" type="button">Distracted</button>
-            <button class="blue-button" type="button">Anxious</button>
-          </div>
-          <div id="mood-button-div">
-            <button class="blue-button" type="button">Tired</button>
-            <button class="blue-button" type="button">Frustrated</button>
-          </div>
-          <div id="mood-button-div">
-            <button class="blue-button" type="button">Sad</button>
-            <button class="blue-button" type="button">Lonely</button>
-          </div>
+        <div id="friends-table-div">
+          <table id="friends-table">
+          </table>
         </div>
         <hr class="divider" id="bottom-id">
         <div id="bottom-button-div">
-          <button class="gray-button" id="friends">Friends</button>
-          <button class="gray-button" id="sign-out">Sign out</button>
-        </div>
-
-
-        <div>
-          <span id="log-counter">Logged Today: `${moodCount}`</span>
+          <button class="gray-button" id="back">Back</button>
+          <button class="gray-button" id="dashboard">Dashboard</button>
         </div>
     </div>
 
 
 
-    <script src="../scripts/main-script.js"></script>
+    <script src="../scripts/friends-script.js"></script>
 </body>
 
 </html>

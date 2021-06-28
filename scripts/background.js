@@ -32,6 +32,11 @@ var promptForLogChanged = false;
 var chromeTime = 0;
 var notInChromeTime = 0;
 
+var friends = [];
+var requests = [];
+var friendsMoodData = {};
+var friendsTableData = [];
+
 // how much time using chrome before prompt to log mood (in seconds)
 // const PROMPT_TIMER = 5; // 5 seconds
 const PROMPT_TIMER = 1800; // 30 minutes (keep)
@@ -47,9 +52,7 @@ const INACTIVE_TIMER = 300; // 5 minutes
 // how often to update firebase database (timeIntervals and moods)
 // const FIREBASE_UPDATE_FREQ = 10000; // 10 seconds
 const FIREBASE_UPDATE_FREQ = 2000; // 2 seconds
-
-
-
+// const UPDATE_FRIENDS_FREQ = 10000; // 1 second
 
 function showPromptIcon(status) {
   // console.log("change icon");
@@ -64,6 +67,93 @@ function clearLocalData() {
   timeIntervalList = [];
   moodsList = [];
   tabs = [];
+}
+
+async function updateFriends() {
+  // console.log("updateFriends run");
+  const friendStatuses = await getFriends(currentUser);
+  // console.log(friendStatuses);
+  var temp_friends = [];
+  var temp_requests = [];
+  var temp_moodData = {};
+  var temp_webData = {};
+
+
+  for (var friend_uid in friendStatuses) {
+    // console.log(friend_uid, friendStatuses[friend_uid]);
+    var friend_data = await getUserFromUID(friend_uid);
+
+    if (friendStatuses[friend_uid] === 3) {
+      temp_moodData[friend_uid] = await getFriendMoodData(friend_uid);
+      temp_webData[friend_uid] = await getFriendWebTime(friend_uid);
+
+      temp_friends.push(friend_data);
+    } else if (friendStatuses[friend_uid] === 2) {
+      temp_requests.push(friend_data);
+    }
+  }
+  // console.log(friends);
+  // console.log(friendsMoodData);
+
+  function sortFriendsByLogged(a, b) {
+    function moodCountForSort(uid) {
+      if (uid in friendsMoodData) {
+        let moodData = friendsMoodData[uid];
+        return Object.keys(moodData).length;
+      }
+      return 0;
+    }
+    // console.log(moodCountForSort(a.uid), moodCountForSort(b.uid));
+    return moodCountForSort(b.uid) - moodCountForSort(a.uid);
+  }
+
+  friends = temp_friends;
+  requests = temp_requests;
+  friendsMoodData = temp_moodData;
+  friendsWebTime = temp_webData;
+
+  // DEBUG with Imaginary Friend
+  friends.push({
+    name: "Imaginary Friend",
+    uid: "imaginary_friend_uid",
+    email: "imaginary_friend@gmail.com",
+    username: "imaginaryFriend101"
+  });
+
+  friendsMoodData["imaginary_friend_uid"] = { "11:01:31": { mood: "Anxious" } };
+  friendsWebTime["imaginary_friend_uid"] = { h: 1, m: 32, s: 24 };
+
+  // console.log(friendsMoodData);
+  // console.log(friends);
+  friends.sort(sortFriendsByLogged);
+
+  // console.log(friends);
+  // console.log(friendsMoodData);
+  // console.log(friendsWebTime);
+
+  friendsTableData = [];
+  friends.forEach(function (item, index) {
+    // console.log(item, index);
+    // console.log(item.uid);
+    let moodData = friendsMoodData[item.uid];
+    let lastMoodLogged = getLastMoodLogged(moodData);
+    // console.log(lastMoodLogged);
+    var moodsCount = Object.keys(moodData).length;
+    let webData = friendsWebTime[item.uid];
+    // console.log(webData);
+    let webStr = webData.h + "h " + webData.m + "m";
+
+    friendsTableData.push({
+      User: item.username,
+      WebActivity: webStr,
+      Logged: moodsCount,
+      LastMoodLogged: lastMoodLogged.mood
+    });
+  });
+
+  console.log(friendsTableData);
+
+
 }
 
 function updateLocalVariables(user) {
@@ -204,7 +294,13 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     // console.log("recieved count_moods request", moodsList.length);
     sendResponse({ message: 'success', count: moodsList.length });
   }
-  return true;
+  else if (request.message === 'extension_opened') {
+    // console.log("extension opened");
+    updateFriends();
+  }
+  else if (request.message === 'get_friends_data') {
+    sendResponse({ message: 'success', data: friendsTableData });
+  }
 });
 
 function updateMood(moodObj) {
@@ -319,7 +415,7 @@ function getLastFocused() {
         if (promptForLog == false) {
           notInChromeTime = 0;
           chromeTime += 1;
-          console.log(`Chrome time: ${chromeTime} `);
+          // console.log(`Chrome time: ${chromeTime} `);
         }
         // get active tab in focused window
         var activeTab = currentWindow.tabs.find(t => t.active === true);
@@ -338,7 +434,7 @@ function getLastFocused() {
             // if idle for time (in seconds) stop current interval (300 = 5 minutes, 600 = 10 minutes)
             const IDLE_TIMER = 600;
             chrome.idle.queryState(IDLE_TIMER, function (state) {
-              console.log(state);
+              // console.log(state);
               if (state === 'active') {
                 if (currentTab !== tab.url) {
                   // Set time interval for new current tab
@@ -358,9 +454,9 @@ function getLastFocused() {
         // not in chrome
         if (promptForLog == false) {
           notInChromeTime += 1;
-          console.log(`not using chrome: ${notInChromeTime}`);
+          // console.log(`not using chrome: ${notInChromeTime}`);
           if (notInChromeTime >= INACTIVE_TIMER) {
-            console.log("RESET ACTIVE TIMER");
+            // console.log("RESET ACTIVE TIMER");
             chromeTime = 0;
             notInChromeTime = 0;
 
@@ -391,9 +487,9 @@ function checkDOM(state, activeUrl, tab, activeTab) {
     // trackForNetflix(mainTRacker, activeUrl, tab, activeTab);
   } else {
     // Idle for 30 seconds
-    console.log("Idle for 30 seconds");
+    // console.log("Idle for 30 seconds");
     // console.log("RESET ACTIVE TIMER");
-    console.log("HERE");
+    // console.log("HERE");
     chromeTime = 0;
     notInChromeTime = 0;
     promptForLog = false;
@@ -441,15 +537,15 @@ function executeScriptNetflix(callback, activeUrl, tab, activeTab) {
 }
 
 
-function updateTime() {
+function intervalUpdateTime() {
   // Run bgCheck every second
   setInterval(bgCheck, 1000);
 }
 
 // update firebase database
-function updateStorage() {
+function intervalUpdateStorage() {
   setInterval(updateFirebaseDatabase, FIREBASE_UPDATE_FREQ);
 }
 
-updateTime();
-updateStorage();
+intervalUpdateTime();
+intervalUpdateStorage();

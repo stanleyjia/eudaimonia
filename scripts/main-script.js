@@ -1,11 +1,19 @@
 
+console.log("main script run");
+
+
 var logCounter = document.getElementById("log-counter");
 chrome.runtime.sendMessage({ message: 'get_moods_count' }, function (response) {
   if (response.message === 'success') {
-    // console.log(response.count);
+    console.log(response.count);
     logCounter.innerText = "Logged Today: " + response.count;
   }
 });
+
+
+chrome.runtime.sendMessage({ message: 'extension_opened' });
+
+
 
 document.querySelector('#sign-out').addEventListener('click', () => {
   chrome.runtime.sendMessage({ message: 'sign_out' }, function (response) {
@@ -15,9 +23,17 @@ document.querySelector('#sign-out').addEventListener('click', () => {
   });
 });
 
-document.querySelector('#dashboard').addEventListener('click', () => {
-  var newURL = "https://projecteudaimonia.net";
-  chrome.tabs.create({ url: newURL });
+// document.querySelector('#dashboard').addEventListener('click', () => {
+//   var newURL = "https://projecteudaimonia.net";
+//   chrome.tabs.create({ url: newURL });
+// });
+
+document.querySelector('#friends').addEventListener('click', () => {
+  // console.log("friends clicked");
+  window.location.replace('./friends.html');
+
+  // var newURL = "https://projecteudaimonia.net";
+  // chrome.tabs.create({ url: newURL });
 });
 
 const mood_buttons = document.querySelectorAll(".blue-button");

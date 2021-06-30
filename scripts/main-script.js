@@ -14,19 +14,10 @@ chrome.runtime.sendMessage({ message: 'get_moods_count' }, function (response) {
 chrome.runtime.sendMessage({ message: 'extension_opened' });
 
 
-
-document.querySelector('#sign-out').addEventListener('click', () => {
-  chrome.runtime.sendMessage({ message: 'sign_out' }, function (response) {
-    if (response.message === 'success') {
-      window.location.replace('./login.html');
-    }
-  });
+document.querySelector('#dashboard').addEventListener('click', () => {
+  var newURL = "https://projecteudaimonia.net";
+  chrome.tabs.create({ url: newURL });
 });
-
-// document.querySelector('#dashboard').addEventListener('click', () => {
-//   var newURL = "https://projecteudaimonia.net";
-//   chrome.tabs.create({ url: newURL });
-// });
 
 document.querySelector('#friends').addEventListener('click', () => {
   // console.log("friends clicked");

@@ -124,6 +124,32 @@
           margin-block-end: 0.0em;
         }
 
+        #friends-table {
+          border-collapse: collapse;
+          width: 100%;
+        }
+
+        #friends-table th {
+          padding-top: 12px;
+          padding-bottom: 12px;
+          text-align: left;
+          background-color: #4d90ad ;
+          color: white;
+        }
+
+        #friends-table td, #friends-table th {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+
+        #friends-table tr:nth-child(even) {  
+          background-color: #f2f2f2;
+        }
+
+        #friends-table tr:hover {
+          background-color: #ddd;
+        }
+
         .table-header {
           color:black;
           font-size: 15px;
@@ -151,7 +177,7 @@
         <hr class="divider" id="bottom-id">
         <div id="bottom-button-div">
           <button class="gray-button" id="back">Back</button>
-          <button class="gray-button" id="dashboard">Dashboard</button>
+          <button class="gray-button" id="sign-out">Sign out</button>
         </div>
     </div>
 

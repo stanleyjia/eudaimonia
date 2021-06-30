@@ -1,12 +1,20 @@
 // console.log("friends loaded");
 
 
-// Go to dashboard
-document.querySelector('#dashboard').addEventListener('click', () => {
-  var newURL = "https://projecteudaimonia.net";
-  chrome.tabs.create({ url: newURL });
-});
+// // Go to dashboard
+// document.querySelector('#dashboard').addEventListener('click', () => {
+//   var newURL = "https://projecteudaimonia.net";
+//   chrome.tabs.create({ url: newURL });
+// });
 
+// Sign out
+document.querySelector('#sign-out').addEventListener('click', () => {
+  chrome.runtime.sendMessage({ message: 'sign_out' }, function (response) {
+    if (response.message === 'success') {
+      window.location.replace('./login.html');
+    }
+  });
+});
 
 // Go to main page
 document.querySelector('#back').addEventListener('click', () => {

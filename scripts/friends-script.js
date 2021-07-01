@@ -1,12 +1,20 @@
 // console.log("friends loaded");
 
 
-// Go to dashboard
-document.querySelector('#dashboard').addEventListener('click', () => {
-  var newURL = "https://projecteudaimonia.net";
-  chrome.tabs.create({ url: newURL });
-});
+// // Go to dashboard
+// document.querySelector('#dashboard').addEventListener('click', () => {
+//   var newURL = "https://projecteudaimonia.net";
+//   chrome.tabs.create({ url: newURL });
+// });
 
+// Sign out
+document.querySelector('#sign-out').addEventListener('click', () => {
+  chrome.runtime.sendMessage({ message: 'sign_out' }, function (response) {
+    if (response.message === 'success') {
+      window.location.replace('./login.html');
+    }
+  });
+});
 
 // Go to main page
 document.querySelector('#back').addEventListener('click', () => {
@@ -42,7 +50,9 @@ function generateTableHead(table, data) {
   for (let key of data) {
     let th = document.createElement("th");
     th.className = "table-header";
-    let text = document.createTextNode(key);
+    // let text = key;
+    // text = text.replace(/([a-z])([A-Z])/g, '$1 $2');
+    text = document.createTextNode(key);
     th.appendChild(text);
     row.appendChild(th);
   }

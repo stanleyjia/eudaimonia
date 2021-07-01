@@ -50,7 +50,9 @@ function generateTableHead(table, data) {
   for (let key of data) {
     let th = document.createElement("th");
     th.className = "table-header";
-    let text = document.createTextNode(key);
+    // let text = key;
+    // text = text.replace(/([a-z])([A-Z])/g, '$1 $2');
+    text = document.createTextNode(key);
     th.appendChild(text);
     row.appendChild(th);
   }

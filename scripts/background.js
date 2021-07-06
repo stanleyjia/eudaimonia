@@ -1,11 +1,9 @@
 
 var db = firebase.database();
-// if emulator,
-// if (location.hostname === "localhost") {
-//   // Point to the RTDB emulator running on localhost.
-//   db.useEmulator("localhost", 9000);
-// }
-// console.log(`Location ${location}`);
+
+// Connect to emulator
+db.useEmulator("localhost", 8000);
+
 
 // Indicator variables
 var userExists = false;

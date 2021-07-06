@@ -23,5 +23,5 @@
     "chrome://favicon/*",
     "webNavigation"
   ],
-  "content_security_policy": "script-src 'self' https://*.firebaseio.com https://cdn.firebase.com https://apis.google.com https://ajax.googleapis.com https://www.gstatic.com; object-src 'self'"
+  "content_security_policy": "script-src 'self' http://localhost:8000 https://*.firebaseio.com https://cdn.firebase.com https://apis.google.com https://ajax.googleapis.com https://www.gstatic.com; object-src 'self'"
 }

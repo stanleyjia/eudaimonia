@@ -2,7 +2,7 @@
 var db = firebase.database();
 
 // Connect to emulator
-db.useEmulator("localhost", 8000);
+// db.useEmulator("localhost", 8000);
 
 
 // Indicator variables
@@ -149,7 +149,7 @@ async function updateFriends() {
     });
   });
 
-  console.log(friendsTableData);
+  // console.log(friendsTableData);
 
 
 }
@@ -193,8 +193,9 @@ function updateLocalVariables(user) {
   db.ref(`moods/${user.uid}/${today}`).once("value", function (snapshot) {
     snapshot.forEach((child) => {
       // console.log(child.key, child.val());
+      var time = child.key;
       var data = child.val();
-      var newMood = new Mood(today, child.key, data.mood);
+      var newMood = new Mood(today, time, data.mood, data.cat, data.desc);
       moodsList.push(newMood);
     });
   });
@@ -242,6 +243,8 @@ chrome.webNavigation.onCompleted.addListener(function (details) {
   });
 });
 
+var currentMood = ""; // to keep track in between mood and category pages
+var currentCat = ""; // to keep track in between mood and category pages
 // recieve messages
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   // console.log(request.message);
@@ -266,27 +269,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     sendResponse({ message: 'success' });
   }
   else if (request.message === 'mood_clicked') {
-    // console.log(`Mood Button clicked: ${request.mood}`);
-    var time = getTime();
-    var mood_instance = new Mood(getToday(), time, request.mood);
-    // check if mood was entered twice (same timestamp)
-    var items = moodsList.filter(item => item.mood == mood_instance.mood && item.day == mood_instance.day && item.time == mood_instance.time);
-    if (items.length == 0) {
-      moodsList.push(mood_instance);
-      incrementTotalMoodCount(mood_instance.mood);
-      updateTotalMoodCount();
-      updateMood(mood_instance);
-    } else {
-      // console.log("[mood clicked] mood already logged");
-    }
-    // Reset prompt
-    chromeTime = 0;
-    notInChromeTime = 0;
-    promptForLog = false;
-    showPromptIcon(promptForLog);
-
-
-    sendResponse({ message: 'success' });
+    moodClicked(request, sendResponse);
+  }
+  else if (request.message === 'category_clicked') {
+    // console.log(request.desc);
+    category_clicked(request, sendResponse);
+  }
+  else if (request.message === 'desc_submitted') {
+    // console.log(request.desc);
+    desc_submitted(request, sendResponse);
   }
   else if (request.message === 'get_moods_count') {
     // console.log("recieved count_moods request", moodsList.length);
@@ -301,11 +292,50 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
 });
 
+function moodClicked(request, sendResponse) {
+  // console.log(`Mood Button clicked: ${request.mood}`);
+  currentMood = request.mood;
+
+  sendResponse({ message: 'success' });
+}
+
+function category_clicked(request, sendResponse) {
+  // console.log(currentMood, request.cat);
+  currentCat = request.cat;
+
+  sendResponse({ message: 'success' });
+}
+
+function desc_submitted(request, sendResponse) {
+  // console.log("Mood Submitted:", currentMood, "about", currentCat, "-", request.desc);
+  var time = getTime();
+  var mood_instance = new Mood(getToday(), time, currentMood, currentCat, request.desc);
+  // check if mood was entered twice (same timestamp)
+  var items = moodsList.filter(item => item.mood == mood_instance.mood && item.cat == mood_instance.cat && item.day == mood_instance.day && item.time == mood_instance.time);
+  if (items.length == 0) {
+    moodsList.push(mood_instance);
+    incrementTotalMoodCount(mood_instance.mood);
+    updateTotalMoodCount();
+    updateMood(mood_instance);
+  } else {
+    // console.log("[mood clicked] mood already logged");no
+  }
+  // Reset prompt
+  chromeTime = 0;
+  notInChromeTime = 0;
+  promptForLog = false;
+  showPromptIcon(promptForLog);
+  sendResponse({ message: 'success' });
+}
+
+
 function updateMood(moodObj) {
   var dateStr = getToday();
   var updates = {};
   var moodData = {
-    "mood": moodObj.mood
+    "mood": moodObj.mood,
+    "category": moodObj.cat,
+    "description": moodObj.desc,
   };
   var timestamp = moodObj.time;
   updates[timestamp] = moodData;

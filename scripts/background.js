@@ -138,14 +138,38 @@ async function updateFriends() {
 
   // DEBUG with Imaginary Friend
   friends.push({
-    name: "Imaginary Friend",
+    name: "Chris Barber",
+    profile: "../img/profile1.png",
     uid: "imaginary_friend_uid",
     email: "imaginary_friend@gmail.com",
     username: "imaginaryFriend101"
   });
+  friends.push({
+    name: "Stanley Jia",
+    profile: "../img/profile1.png",
+    uid: "imaginary_friend_uid2",
+    email: "imaginary_friend2@gmail.com",
+    username: "imaginaryFriend100"
+  });
+  friends.push({
+    name: "Joseph Merkadeau",
+    profile: "../img/profile1.png",
+    uid: "imaginary_friend_uid2",
+    email: "imaginary_friend2@gmail.com",
+    username: "imaginaryFriend100"
+  });
+  friends.push({
+    name: "Imaginary Friends",
+    profile: "../img/profile1.png",
+    uid: "imaginary_friend_uid2",
+    email: "imaginary_friend2@gmail.com",
+    username: "imaginaryFriend100"
+  });
 
   friendsMoodData["imaginary_friend_uid"] = { "11:01:31": { mood: "Anxious" } };
   friendsWebTime["imaginary_friend_uid"] = { h: 1, m: 32, s: 24 };
+  friendsMoodData["imaginary_friend_uid2"] = { "11:05:31": { mood: "Happy" } };
+  friendsWebTime["imaginary_friend_uid2"] = { h: 1, m: 52, s: 59 };
 
   // console.log(friendsMoodData);
   // console.log(friends);
@@ -168,10 +192,12 @@ async function updateFriends() {
     let webStr = webData.h + "h " + webData.m + "m";
 
     friendsTableData.push({
+      Profile: item.profile,
+      Name: item.name,
       User: item.username,
-      WebActivity: webStr,
       Logged: moodsCount,
-      LastMoodLogged: lastMoodLogged.mood
+      LastMoodLogged: lastMoodLogged.mood,
+      WebActivity: webStr
     });
   });
 

@@ -9,6 +9,21 @@ const day = today.getDate();
 const year = today.getFullYear();
 const date = month + '-' + day + '-' + year;
 
+// Getting multiple dates for social feed
+const yesterday = new Date();
+yesterday.setDate(yesterday.getDate() - 1);
+const yMonth = yesterday.getMonth() + 1;
+const yDay = yesterday.getDate();
+const yYear = yesterday.getFullYear();
+const yDate = yMonth + '-' + yDay + '-' + yYear;
+
+const dayBeforeYesterday = new Date();
+dayBeforeYesterday.setDate(dayBeforeYesterday.getDate() - 2)
+const dMonth = dayBeforeYesterday.getMonth() + 1;
+const dDay = dayBeforeYesterday.getDate();
+const dYear = dayBeforeYesterday.getFullYear();
+const dDate = dMonth + '-' + dDay + '-' + dYear;
+
 const timeToInteger = (time) => {
   var t = time.split(':');
   for (var i = 0; i < t.length; i++) {
@@ -85,6 +100,63 @@ async function getFriendMoodData(uid) {
       // console.log(returnVal);
     } else {
       // console.log('friend mood data doesnt exist yet');
+    }
+  });
+  return returnVal;
+}
+
+async function getFriendMoodFeed(friend_uid, username, photoUrl) {
+  const ref = database.ref(`moods/${friend_uid}/`);
+  var returnVal = [];
+  await ref.once('value', (snapshot) => {
+    if (snapshot.exists()) {
+      var moodData = snapshot.val();
+      if (date in moodData) {
+        // console.log(moodData[date])
+        // returnVal.push(moodData[date]);
+        for (moodLogged in moodData[date]){
+          returnVal.push({
+            'username': username,
+            'date': date,
+            'time': moodLogged,
+            'mood': moodData[date][moodLogged].mood,
+            'category': moodData[date][moodLogged].category,
+            'description': moodData[date][moodLogged].description,
+            'uid': friend_uid,
+            'photoUrl': photoUrl
+          })
+        }
+      }
+      if (yDate in moodData) {
+        // returnVal.push(moodData[yDate]);
+        for (moodLogged in moodData[yDate]){
+          returnVal.push({
+            'username': username,
+            'date': yDate,
+            'time': moodLogged,
+            'mood': moodData[yDate][moodLogged].mood,
+            'category': moodData[yDate][moodLogged].category,
+            'description': moodData[yDate][moodLogged].description,
+            'uid': friend_uid,
+            'photoUrl': photoUrl
+          })
+        }
+      }
+      if (dDate in moodData) {
+        // returnVal.push(moodData[dDate]);
+        for (moodLogged in moodData[dDate]){
+          returnVal.push({
+            'usernmae': username,
+            'date': dDate,
+            'time': moodLogged,
+            'mood': moodData[dDate][moodLogged].mood,
+            'category': moodData[dDate][moodLogged].category,
+            'description': moodData[dDate][moodLogged].description,
+            'uid': friend_uid,
+            'photoUrl': photoUrl
+          })
+        }
+      }
     }
   });
   return returnVal;

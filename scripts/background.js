@@ -2,7 +2,7 @@
 var db = firebase.database();
 
 // Connect to emulator
-db.useEmulator("localhost", 8000);
+// db.useEmulator("localhost", 8000);
 
 
 // Indicator variables
@@ -34,6 +34,7 @@ var friends = [];
 var requests = [];
 var friendsMoodData = {};
 var friendsTableData = [];
+var socialFeedData = [];
 
 // how much time using chrome before prompt to log mood (in seconds)
 // const PROMPT_TIMER = 5; // 5 seconds
@@ -75,21 +76,46 @@ async function updateFriends() {
   var temp_requests = [];
   var temp_moodData = {};
   var temp_webData = {};
+  var friendMoodFeed = [];
 
 
   for (var friend_uid in friendStatuses) {
     // console.log(friend_uid, friendStatuses[friend_uid]);
     var friend_data = await getUserFromUID(friend_uid);
+    // console.log(friend_data)
+    
 
     if (friendStatuses[friend_uid] === 3) {
       temp_moodData[friend_uid] = await getFriendMoodData(friend_uid);
       temp_webData[friend_uid] = await getFriendWebTime(friend_uid);
 
+      // mood feed
+      var friendMoodsLogged = await getFriendMoodFeed(friend_uid, friend_data.username, friend_data.photoUrl);
+
+      if (friendMoodsLogged.length != 0) {
+        friendMoodFeed = friendMoodFeed.concat(friendMoodsLogged)
+      }
+      //
+
       temp_friends.push(friend_data);
+
     } else if (friendStatuses[friend_uid] === 2) {
       temp_requests.push(friend_data);
     }
   }
+  // sorting the social feed by time
+  // var unsortedFeed = friendMoodFeed;
+  // console.log(unsortedFeed);
+
+  friendMoodFeed.sort(function (a, b) {
+    return b.time.localeCompare(a.time);
+  })
+  friendMoodFeed.sort(function (a, b) {
+    return b.date.localeCompare(a.date);
+  });
+  console.log(friendMoodFeed);
+
+
   // console.log(friends);
   // console.log(friendsMoodData);
 
@@ -298,6 +324,9 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   }
   else if (request.message === 'get_friends_data') {
     sendResponse({ message: 'success', data: friendsTableData });
+  }
+  else if (request.message === 'get_social_feed_data') {
+    sendResponse({message: 'success', data: socialFeedData})
   }
 });
 

@@ -167,39 +167,85 @@
         }
 
         .feed {
-          background-color: #f2f2f2;
-          border: thin solid #4d90ad;
+          background-color: #dedede;
+          border: thin solid darkgray;
           margin: 10px;
+          display: grid;
+          grid-template-columns: 1fr 2fr 1fr;
+          grid-template-rows: 60px 40px 40px;
+          box-shadow: 1px 1px 1px lightgray;
         }
         
         .username {
           text-align: left;
+          color: #555555;
+          margin: 10px;
           font-size: 8vw;
           padding-left: 3%;
+          grid-column-start: 3;
+          grid-column-end: 4;
+          grid-row-start: 1;
+          grid-row-end: 2;
         }
         .name {
           text-align: center;
-          font-size: 10vw;
+          font-size: auto;
           padding-left: 3%;
+          grid-column-start: 2;
+          grid-column-end: 3;
+          grid-row-start: 1;
+          grid-row-end: 2;
         }
         .feeling {
           text-align: center;
           font-size: medium;
+          margin: 10px;
+          grid-column-start: 1;
+          grid-column-end: 4;
+          grid-row-start: 2;
+          grid-row-end: 3;
         }
         .web {
           font-size: small;
         }
         .profile {
           width: 50px;
-          height: 50px;
+          height: auto;
           border-radius: 50% 50%;
+          margin: 10px;
+          grid-column-start: 1;
+          grid-column-end: 2;
+          grid-row-start: 1;
+          grid-row-end: 3;
         }
-        .top_part {
-          padding-top: 10px;
-          padding-left: 10px;
-          padding-right: 10px;
-          display: grid;
-          grid-template-columns: 1fr 2fr 1fr;
+        .time-stamp {
+          color: #555555;
+          margin: 10px;
+          font-size: small;
+          text-align: center;
+          grid-column-start: 3;
+          grid-column-end: 4;
+          grid-row-start: 3;
+          grid-row-end: 4;
+        }
+
+        .react-button {
+          border-style: none;
+          background-color: #dedede;
+          margin: 10px;
+          color: #555555;
+          grid-column-start: 1;
+          grid-column-end: 2;
+          grid-row-start: 3;
+          grid-row-end: 4;
+        }
+
+        .hidden-div {
+          grid-column-start: 1;
+          grid-column-end: 4;
+          grid-row-start: 4;
+          grid-row-end: 5;
+          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
         }
 
     </style>

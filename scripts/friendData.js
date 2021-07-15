@@ -162,9 +162,9 @@ function getLastMoodLogged(moodData) {
     // console.log(lastTimestamp, moodData[lastTimestamp]);
     var timeSince = secondsToTime(currentTimeInSeconds - lastTimeStampinSec);
     // console.log(timeSince);
-    return { mood: moodData[lastTimestamp].mood, timeSince: timeSince };
+    return { mood: moodData[lastTimestamp].mood, timeSince: timeSince, timeStamp: lastTimestamp};
   }
-  return { mood: "n/a", timeSince: null };
+  return { mood: "n/a", timeSince: null , timeStamp: "n/a"};
 }
 
 function getTime() {

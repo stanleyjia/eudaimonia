@@ -71,6 +71,7 @@ document.querySelector('#sign-out').addEventListener('click', () => {
       let p5 = document.createElement("button");
       p5.innerHTML = "WGO?";
       p5.classList.add("reactions");
+      p5.classList.add("last");
       hidden_div.appendChild(p5);
 
       // React button 

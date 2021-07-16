@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../scripts/main-init.js"></script>
+
     <title>Document</title>
     <style>
         body {
@@ -56,8 +56,8 @@
 
         }
 
-        .blue-button {
-          background-color: #58a1c1;
+        .category-button {
+          background-color: #f3b23d;
           outline-style: none;
           border: none;
           color: #f3f3f3;
@@ -70,8 +70,8 @@
           width: 90px;
         }
 
-        .blue-button:hover {
-            background-color: #4d90ad !important;
+        .category-button:hover {
+            background-color: #ea9e13 !important;
             -webkit-transition: none !important;
         -moz-transition: none !important;
         -ms-transition: none !important;
@@ -84,8 +84,8 @@
         transform: none !important;
           }
 
-        .blue-button:active {
-          background-color: #44819c !important;
+        .category-button:active {
+          background-color: #ca8811 !important;
         }
 
 
@@ -161,47 +161,45 @@
       <!--<div id="plus-one">+1</div>-->
       <div id='container'>
         <div id='mood-table-title-div'>
-          <h3 id='mood-table-title'>How are you feeling?</h3>
+          <h3 id='mood-table-title'>About what?</h3>
         </div>
         <hr class="divider">
         <div id="mood-table">
           <div id="mood-button-div">
-            <button class="blue-button">Happy</button>
-            <button class="blue-button">Excited</button>
+            <button class="category-button">Family</button>
+            <button class="category-button">Friends</button>
           </div>
           <div id="mood-button-div">
-            <button class="blue-button" type="button">Calm</button>
-            <button class="blue-button" type="button">Focused</button>
+            <button class="category-button" type="button">Relationship</button>
+            <button class="category-button" type="button">Community</button>
           </div>
           <div id="mood-button-div">
-            <button class="blue-button" type="button">Distracted</button>
-            <button class="blue-button" type="button">Anxious</button>
+            <button class="category-button" type="button">Health</button>
+            <button class="category-button" type="button">Hobbies</button>
           </div>
           <div id="mood-button-div">
-            <button class="blue-button" type="button">Bored</button>
-            <button class="blue-button" type="button">Frustrated</button>
+            <button class="category-button" type="button">Money</button>
+            <button class="category-button" type="button">Work</button>
           </div>
           <div id="mood-button-div">
-            <button class="blue-button" type="button">Sad</button>
-            <button class="blue-button" type="button">Lonely</button>
+            <button class="category-button" type="button">Studies</button>
+            <button class="category-button" type="button">Spirituality</button>
           </div>
         </div>
+
         <hr class="divider" id="bottom-id">
         <div id="bottom-button-div">
-          <!-- <button class="gray-button" id="friends">Friends</button> -->
-          <button class="gray-button" id="feed">Feed</button>
-          <button class="gray-button" id="dashboard">Dashboard</button>
+          <button class="gray-button" id="back">Back</button>
+
         </div>
 
 
-        <div>
-          <span id="log-counter">Logged Today: `${moodCount}`</span>
-        </div>
+
     </div>
 
 
 
-    <script src="../scripts/main-script.js"></script>
+    <script src="../scripts/category-script.js"></script>
 </body>
 
 </html>

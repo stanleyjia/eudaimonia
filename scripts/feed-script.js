@@ -20,14 +20,13 @@ document.querySelector('#sign-out').addEventListener('click', () => {
   document.querySelector('#back').addEventListener('click', () => {
     window.location.replace('./main.html');
   });
-  var friendsTableData = [];
-  
+
   // Get friends data
-  chrome.runtime.sendMessage({ message: "get_friends_data" }, function (response) {
+  chrome.runtime.sendMessage({ message: "get_social_feed_data" }, function (response) {
     if (response.message === 'success') {
-      friendsTableData = response.data;
-      let data = Object.keys(friendsTableData[0]);
-      generateFeed(friendsTableData);
+      friendMoodFeed = response.data;
+      let data = Object.keys(friendMoodFeed[0]);
+      generateFeed(friendMoodFeed);
     }
   });
   
@@ -89,31 +88,33 @@ document.querySelector('#sign-out').addEventListener('click', () => {
 
       for (var key in element) {
         let text = "";
-        if (key == "Profile") {
+        if (key == "photoUrl") {
           img = document.createElement("img");
           img.src = element[key]; 
           img.classList.add("profile");
           div.appendChild(img);
-        } else if (key == "Name") {
+        } else if (key == "name") {
           text = document.createTextNode(element[key]);
           p1 = document.createElement("p");
           p1.appendChild(text);
           p1.classList.add("name");
           div.appendChild(p1);
-        } else if (key == "LastMoodLogged") {
+        } else if (key == "mood") {
           text = document.createTextNode("is feeling " + element[key] + ".");
           p1 = document.createElement("p");
           p1.appendChild(text);
           p1.classList.add("feeling");
           div.appendChild(p1);
-        } else if (key == "User") {
-          console.log(element[key]);
-          text = document.createTextNode("@" + element[key]);
-          p1 = document.createElement("p");
-          p1.appendChild(text);
-          p1.classList.add("username");
-          div.appendChild(p1);
-        } else if (key == "TimeStamp") {
+        } 
+        // else if (key == "User") {
+        //   console.log(element[key]);
+        //   text = document.createTextNode("@" + element[key]);
+        //   p1 = document.createElement("p");
+        //   p1.appendChild(text);
+        //   p1.classList.add("username");
+        //   div.appendChild(p1);
+        // }
+         else if (key == "time") {
           let time = element[key];
           time = time.split(':'); // convert to array
           // fetch

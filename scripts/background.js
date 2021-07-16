@@ -1,11 +1,9 @@
 
 var db = firebase.database();
-// if emulator,
-// if (location.hostname === "localhost") {
-//   // Point to the RTDB emulator running on localhost.
-//   db.useEmulator("localhost", 9000);
-// }
-// console.log(`Location ${location}`);
+
+// Connect to emulator
+// db.useEmulator("localhost", 8000);
+
 
 // Indicator variables
 var userExists = false;
@@ -36,6 +34,8 @@ var friends = [];
 var requests = [];
 var friendsMoodData = {};
 var friendsTableData = [];
+var socialFeedData = [];
+var friendMoodFeed = [];
 
 // how much time using chrome before prompt to log mood (in seconds)
 // const PROMPT_TIMER = 5; // 5 seconds
@@ -82,16 +82,40 @@ async function updateFriends() {
   for (var friend_uid in friendStatuses) {
     // console.log(friend_uid, friendStatuses[friend_uid]);
     var friend_data = await getUserFromUID(friend_uid);
+    // console.log(friend_data)
+    
 
     if (friendStatuses[friend_uid] === 3) {
       temp_moodData[friend_uid] = await getFriendMoodData(friend_uid);
       temp_webData[friend_uid] = await getFriendWebTime(friend_uid);
 
+      // mood feed
+      var friendMoodsLogged = await getFriendMoodFeed(friend_uid, friend_data.username, friend_data.name, friend_data.photoUrl);
+
+      if (friendMoodsLogged.length != 0) {
+        friendMoodFeed = friendMoodFeed.concat(friendMoodsLogged)
+      }
+      //
+
       temp_friends.push(friend_data);
+
     } else if (friendStatuses[friend_uid] === 2) {
       temp_requests.push(friend_data);
     }
   }
+  // sorting the social feed by time
+  // var unsortedFeed = friendMoodFeed;
+  // console.log(unsortedFeed);
+
+  friendMoodFeed.sort(function (a, b) {
+    return b.time.localeCompare(a.time);
+  })
+  friendMoodFeed.sort(function (a, b) {
+    return b.date.localeCompare(a.date);
+  });
+  console.log(friendMoodFeed);
+
+
   // console.log(friends);
   // console.log(friendsMoodData);
 
@@ -121,16 +145,6 @@ async function updateFriends() {
 //     username: "imaginaryFriend101"
 //   });
 
-//   for (let i = 0; i < 100; i++) { 
-//     friends.push({
-//       name: "Imaginary Friends",
-//       photoURL: "../img/profile1.png",
-//       uid: "imaginary_friend_uid2",
-//       email: "imaginary_friend2@gmail.com",
-//       username: "imaginaryFriend100"
-//     });
-// }
-
 //   friendsMoodData["imaginary_friend_uid"] = { "11:01:31": { mood: "Anxious" } };
 //   friendsWebTime["imaginary_friend_uid"] = { h: 1, m: 32, s: 24 };
 //   friendsMoodData["imaginary_friend_uid2"] = { "11:05:31": { mood: "Happy" } };
@@ -144,7 +158,6 @@ async function updateFriends() {
   // console.log(friendsMoodData);
   // console.log(friendsWebTime);
 
-  friendsTableData = [];
   friends.forEach(function (item, index) {
     // console.log(item, index);
     // console.log(item.uid);
@@ -167,7 +180,7 @@ async function updateFriends() {
     });
   });
 
-  console.log(friendsTableData);
+  // console.log(friendsTableData);
 
 
 }
@@ -211,8 +224,9 @@ function updateLocalVariables(user) {
   db.ref(`moods/${user.uid}/${today}`).once("value", function (snapshot) {
     snapshot.forEach((child) => {
       // console.log(child.key, child.val());
+      var time = child.key;
       var data = child.val();
-      var newMood = new Mood(today, child.key, data.mood);
+      var newMood = new Mood(today, time, data.mood, data.cat, data.desc);
       moodsList.push(newMood);
     });
   });
@@ -260,6 +274,8 @@ chrome.webNavigation.onCompleted.addListener(function (details) {
   });
 });
 
+var currentMood = ""; // to keep track in between mood and category pages
+var currentCat = ""; // to keep track in between mood and category pages
 // recieve messages
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   // console.log(request.message);
@@ -284,27 +300,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     sendResponse({ message: 'success' });
   }
   else if (request.message === 'mood_clicked') {
-    // console.log(`Mood Button clicked: ${request.mood}`);
-    var time = getTime();
-    var mood_instance = new Mood(getToday(), time, request.mood);
-    // check if mood was entered twice (same timestamp)
-    var items = moodsList.filter(item => item.mood == mood_instance.mood && item.day == mood_instance.day && item.time == mood_instance.time);
-    if (items.length == 0) {
-      moodsList.push(mood_instance);
-      incrementTotalMoodCount(mood_instance.mood);
-      updateTotalMoodCount();
-      updateMood(mood_instance);
-    } else {
-      // console.log("[mood clicked] mood already logged");
-    }
-    // Reset prompt
-    chromeTime = 0;
-    notInChromeTime = 0;
-    promptForLog = false;
-    showPromptIcon(promptForLog);
-
-
-    sendResponse({ message: 'success' });
+    moodClicked(request, sendResponse);
+  }
+  else if (request.message === 'category_clicked') {
+    // console.log(request.desc);
+    category_clicked(request, sendResponse);
+  }
+  else if (request.message === 'desc_submitted') {
+    // console.log(request.desc);
+    desc_submitted(request, sendResponse);
   }
   else if (request.message === 'get_moods_count') {
     // console.log("recieved count_moods request", moodsList.length);
@@ -317,13 +321,55 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   else if (request.message === 'get_friends_data') {
     sendResponse({ message: 'success', data: friendsTableData });
   }
+  else if (request.message === 'get_social_feed_data') {
+    sendResponse({message: 'success', data: friendMoodFeed})
+  }
 });
+
+function moodClicked(request, sendResponse) {
+  // console.log(`Mood Button clicked: ${request.mood}`);
+  currentMood = request.mood;
+
+  sendResponse({ message: 'success' });
+}
+
+function category_clicked(request, sendResponse) {
+  // console.log(currentMood, request.cat);
+  currentCat = request.cat;
+
+  sendResponse({ message: 'success' });
+}
+
+function desc_submitted(request, sendResponse) {
+  // console.log("Mood Submitted:", currentMood, "about", currentCat, "-", request.desc);
+  var time = getTime();
+  var mood_instance = new Mood(getToday(), time, currentMood, currentCat, request.desc);
+  // check if mood was entered twice (same timestamp)
+  var items = moodsList.filter(item => item.mood == mood_instance.mood && item.cat == mood_instance.cat && item.day == mood_instance.day && item.time == mood_instance.time);
+  if (items.length == 0) {
+    moodsList.push(mood_instance);
+    incrementTotalMoodCount(mood_instance.mood);
+    updateTotalMoodCount();
+    updateMood(mood_instance);
+  } else {
+    // console.log("[mood clicked] mood already logged");no
+  }
+  // Reset prompt
+  chromeTime = 0;
+  notInChromeTime = 0;
+  promptForLog = false;
+  showPromptIcon(promptForLog);
+  sendResponse({ message: 'success' });
+}
+
 
 function updateMood(moodObj) {
   var dateStr = getToday();
   var updates = {};
   var moodData = {
-    "mood": moodObj.mood
+    "mood": moodObj.mood,
+    "category": moodObj.cat,
+    "description": moodObj.desc,
   };
   var timestamp = moodObj.time;
   updates[timestamp] = moodData;

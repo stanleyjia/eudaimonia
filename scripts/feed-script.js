@@ -114,7 +114,28 @@ document.querySelector('#sign-out').addEventListener('click', () => {
           p1.classList.add("username");
           div.appendChild(p1);
         } else if (key == "TimeStamp") {
-          text = document.createTextNode(element[key]);
+          let time = element[key];
+          time = time.split(':'); // convert to array
+          // fetch
+          var hours = Number(time[0]);
+          var minutes = Number(time[1]);
+          var seconds = Number(time[2]);
+
+          // calculate
+          let timeValue;
+
+          if (hours > 0 && hours <= 12) {
+            timeValue= "" + hours;
+          } else if (hours > 12) {
+            timeValue= "" + (hours - 12);
+          } else if (hours == 0) {
+            timeValue= "12";
+          }
+          
+          timeValue += (minutes < 10) ? ":0" + minutes : ":" + minutes;  // get minutes
+          timeValue += (hours >= 12) ? " p.m." : " a.m.";  // get AM/PM
+
+          text = document.createTextNode(timeValue);
           p1 = document.createElement("p");
           p1.appendChild(text);
           p1.classList.add("time-stamp");

@@ -19,13 +19,13 @@ document.querySelector('#dashboard').addEventListener('click', () => {
   chrome.tabs.create({ url: newURL });
 });
 
-document.querySelector('#friends').addEventListener('click', () => {
-  // console.log("friends clicked");
-  window.location.replace('./friends.html');
+// document.querySelector('#friends').addEventListener('click', () => {
+//   // console.log("friends clicked");
+//   window.location.replace('./friends.html');
 
-  // var newURL = "https://projecteudaimonia.net";
-  // chrome.tabs.create({ url: newURL });
-});
+//   // var newURL = "https://projecteudaimonia.net";
+//   // chrome.tabs.create({ url: newURL });
+// });
 
 document.querySelector('#feed').addEventListener('click', () => {
   // console.log("friends clicked");

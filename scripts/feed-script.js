@@ -25,21 +25,11 @@ document.querySelector('#sign-out').addEventListener('click', () => {
   // Get friends data
   chrome.runtime.sendMessage({ message: "get_friends_data" }, function (response) {
     if (response.message === 'success') {
-      console.log(response.data);
       friendsTableData = response.data;
       let data = Object.keys(friendsTableData[0]);
       generateFeed(friendsTableData);
     }
   });
-  
-  
-  let mountains = [
-    { name: "Monte Falco", height: 1658, place: "Parco Foreste Casentinesi" },
-    { name: "Monte Falterona", height: 1654, place: "Parco Foreste Casentinesi" },
-    { name: "Poggio Scali", height: 1520, place: "Parco Foreste Casentinesi" },
-    { name: "Pratomagno", height: 1592, place: "Parco Foreste Casentinesi" },
-    { name: "Monte Amiata", height: 1738, place: "Siena" }
-  ];
   
   // Generate Feed
   function generateFeed(data) {
@@ -55,13 +45,33 @@ document.querySelector('#sign-out').addEventListener('click', () => {
 
       // hidden reaction div 
       let hidden_div = document.createElement("div");
-      div.appendChild(hidden_div);
+      currentDiv.appendChild(hidden_div);
       hidden_div.style.display = 'none';
-      hidden_div.classList = "hidden-div";
+      hidden_div.classList.add("hidden-div");
+      
 
-      let p = document.createElement("p");
-      p.innerHTML = "like";
-      hidden_div.appendChild(p);
+      let like_button = document.createElement("button");
+      let p2 = document.createElement("img");
+      like_button.appendChild(p2);
+      p2.src = "../img/heart.png";
+      p2.classList.add("heart");
+      like_button.classList.add("reactions");
+      hidden_div.appendChild(like_button);
+
+      let p3 = document.createElement("button");
+      p3.innerHTML = "!!";
+      p3.classList.add("reactions");
+      hidden_div.appendChild(p3);
+
+      let p4 = document.createElement("button");
+      p4.innerHTML = "HYD?";
+      p4.classList.add("reactions");
+      hidden_div.appendChild(p4);
+
+      let p5 = document.createElement("button");
+      p5.innerHTML = "WGO?";
+      p5.classList.add("reactions");
+      hidden_div.appendChild(p5);
 
       // React button 
       let react = document.createElement("button");
@@ -84,9 +94,6 @@ document.querySelector('#sign-out').addEventListener('click', () => {
           img.classList.add("profile");
           div.appendChild(img);
         } else if (key == "Name") {
-          // if (element[key].length() > 10) {
-
-          // }
           text = document.createTextNode(element[key]);
           p1 = document.createElement("p");
           p1.appendChild(text);

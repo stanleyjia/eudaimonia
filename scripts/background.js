@@ -157,7 +157,7 @@ async function updateFriends() {
     let webStr = webData.h + "h " + webData.m + "m";
 
     friendsTableData.push({
-      Profile: item.photoURL,
+      Profile: item.photoUrl,
       Name: item.name,
       User: item.username,
       Logged: moodsCount,

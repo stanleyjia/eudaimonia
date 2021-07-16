@@ -35,7 +35,7 @@
           overflow: auto;
         }
         #container {
-          text-align:center;
+          text-align: center;
           padding: 15px 30px 15px 30px;
         }
 
@@ -169,7 +169,8 @@
         .feed {
           background-color: #dedede;
           border: thin solid darkgray;
-          margin: 10px;
+          margin-top: 10px;
+          margin-bottom: 10px;
           display: grid;
           grid-template-columns: 1fr 2fr 1fr;
           grid-template-rows: 60px 40px 40px;
@@ -188,8 +189,9 @@
           grid-row-end: 2;
         }
         .name {
-          text-align: center;
-          font-size: auto;
+          text-align: left;
+          font-size: small;
+          font-weight: bold;
           padding-left: 3%;
           grid-column-start: 2;
           grid-column-end: 3;
@@ -212,6 +214,15 @@
           width: 50px;
           height: auto;
           border-radius: 50% 50%;
+          margin: 10px;
+          grid-column-start: 1;
+          grid-column-end: 2;
+          grid-row-start: 1;
+          grid-row-end: 3;
+        }
+        .profile-canvas {
+          width: 50px;
+          height: 50px;
           margin: 10px;
           grid-column-start: 1;
           grid-column-end: 2;
@@ -241,11 +252,35 @@
         }
 
         .hidden-div {
+          background-color: #dedede;
+          border: thin solid darkgray;
+          margin-top: -6px;
+          margin-left: 0px;
+          margin-right: 0px;
           grid-column-start: 1;
           grid-column-end: 4;
           grid-row-start: 4;
           grid-row-end: 5;
-          grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+          grid-template-columns: 1fr 1fr 1fr 1fr;
+          grid-template-rows: 40px;
+          box-shadow: 1px 1px 1px lightgray;
+        }
+
+        .heart {
+          width: 20px; 
+          justify-self: center;
+          align-self: center;
+          height: auto;
+        }
+        .reactions {
+          border: none;
+          background-color:#dedede;
+          color: #555555;
+          font-size: small;
+          text-align: center;
+        }
+        .reactions:hover {
+          background-color: darkgray;
         }
 
     </style>
